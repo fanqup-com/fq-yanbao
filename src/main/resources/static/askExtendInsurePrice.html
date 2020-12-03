@@ -1,0 +1,389 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="Bookmark" href="/favicon.ico">
+    <link rel="Shortcut Icon" href="/favicon.ico" />
+    <!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+
+<![endif]-->
+    <link href="static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+    <link href="static/h-ui.admin/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+    <link href="lib/Hui-iconfont/1.0.8/iconfont.css" rel="stylesheet" type="text/css" />
+
+    <!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+    <style>
+        .span-3 {
+            font-size: 12px;
+            margin-left: 30px;
+            color: black;
+        }
+
+        .carInfoWrap {
+            width: 90%;
+            color: #000000;
+            font-weight: bold;
+            margin: 15px auto
+        }
+
+        .carInfoWrap .carLogoName {
+            border-bottom: 1px dashed #e5e5e5;
+        }
+
+        .carInfoWrap .carLogoName .carInfo_logo {
+            display: inline-block;
+            vertical-align: top;
+            width: 80px;
+            height: 80px;
+        }
+
+        .carInfoWrap .carLogoName .carInfo_logo img {
+            display: block;
+            height: 100%;
+            width: 100%
+        }
+
+        .carInfoWrap .carLogoName .carInfo_brand {
+            display: inline-block;
+            vertical-align: top;
+            padding: 10px
+        }
+
+        .carInfo_brand h4 {
+            font-weight: bold;
+            height: 30px;
+            line-height: 30px;
+            font-size: 16px;
+            margin: 0
+        }
+
+        .carInfoWrap .carMileCityDate {
+            height: 30px;
+            line-height: 30px;
+            font-size: 14px;
+        }
+
+        /* 投保计划 */
+        .insurePlanPanel {
+            margin: 15px 0
+        }
+
+        .insurePlan {
+            width: 90%;
+            margin: 15px auto;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #QADate,
+        #projectChoice {
+            border: 1px solid #94B8D7 !important;
+            height: 28px;
+            padding: 2px;
+            margin-right: 20px;
+        }
+
+        #QADate option,
+        #projectChoice option {
+            font-weight: normal
+        }
+
+        .table {
+            margin: 30px auto;
+            color: #666;
+            border-collapse: collapse;
+            border: 1px solid #e5e5e5;
+            font-size: 16px;
+        }
+
+        .table tr th {
+            height: 35px;
+            line-height: 35px;
+            font-weight: bold;
+            border: 3px solid #e5e5e5;
+            background-color: #f1f1f1;
+            text-align: center;
+        }
+
+        .table tr td {
+            height: 30px;
+            line-height: 30px;
+            border: 3px solid #e5e5e5;
+            text-align: center;
+        }
+
+        .td-y-hov,
+        .td-p-hov {
+            background-color: #0184ff;
+            color: #fff;
+        }
+
+        .table a {
+            color: #666;
+            cursor: pointer;
+            font-size: 16px
+        }
+
+        #s-price {
+            width: 230px;
+            height: 50px;
+            line-height: 50px;
+            display: block;
+            text-align: center;
+            margin: 0 auto;
+            border: 1px dashed #e5e5e5;
+            font-size: 16pt;
+            color: #eb6100;
+            background-color: #ffffe1;
+            margin-bottom: 20px;
+        }
+    </style>
+    <title>延保询价</title>
+</head>
+
+<body>
+    <div class="pd-20">
+        <div class="panel panel-default">
+            <div class="panel-header">车辆信息</div>
+            <div class="panel-body ">
+                <div class="carInfoWrap">
+                    <div class="carLogoName">
+                        <div class="carInfo_logo"><img src="" alt=""></div>
+                        <div class="carInfo_brand">
+                            <h4 class="brandSimple"></h4>
+                            <h4 class="brandFull"></h4>
+                        </div>
+                    </div>
+                    <div class="carMileCityDate">
+                        <span class="cityDate"></span>
+                        <span class="mile" style="float: right"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default insurePlanPanel">
+            <div class="panel-header">投保计划</div>
+            <div class="panel-body">
+                <div class="insurePlan">
+                    <div class="insurePlanH">
+                        <span>原厂质保年限：</span>
+                        <select onchange="getProjectHtml('inPageChange')" name="" id="QADate">
+                            <option value="0">0年</option>
+                            <option value="1">1年</option>
+                            <option value="2">2年</option>
+                            <option selected="selected" value="3">3年</option>
+                            <option value="4">4年</option>
+                            <option value="5">5年</option>
+                            <option value="6">6年</option>
+                            <option value="7">7年</option>
+                            <option value="8">8年</option>
+                        </select>
+                        <span>项目选择：</span>
+                        <select onchange="getProjectHtml('inPageChange')" name="" id="projectChoice"></select>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>选择延长保修期</th>
+                                    <th>选择保额</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tb-content"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-header">延保价格</div>
+            <div class="panel-body">
+                <div style="margin: 15px auto">
+                    <span id="s-price"></span>
+                </div>
+                <!-- <button id="btnNext" style="display: none">下一步</button> -->
+            </div>
+        </div>
+    </div>
+
+    <input id="txtCarHighPrice" type="hidden" />
+    <input id="txtCarHighPrice2" type="hidden" />
+    <input id="txtCarRegDate" type="hidden" />
+    <input id="txtInsureYear" type="hidden" />
+    <input id="txtInsurePrice" type="hidden" />
+    <input id="txtInsurePrice1" type="hidden" />
+    <input id="txtInsurePrice2" type="hidden" />
+    <input id="txtInsureRebate" type="hidden" />
+    <input id="txtExtendInsureDate" type="hidden" />
+    <input id="txtCustomerName" type="hidden" value="中汽国汇汽车科技有限公司" />
+    <input id="txtInsurerName" type="hidden" value="中国人寿财产保险股份有限公司" />
+    <input id="txtServerTelphone" type="hidden" value="400-6633-815" />
+    <input id="txtServerAddress" type="hidden" value="北京市朝阳区朝外SOHO A座1707室" />
+    <input id="txtIsAllowEdit" type="hidden" value="1" />
+    <input id="txtDefaultCode" type="hidden" value="Sys0101" />
+
+    <input id="txtServiceCode" type="hidden" value="" />
+    <input id="txtOptype" type="hidden" value="0" />
+
+    <script type="text/javascript" src="./static/projectInfo.js"></script>
+    <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="lib/jquery.cookie.js"></script>
+    <script type="text/javascript" src="./lib/base64.js"></script>
+    <script type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+    <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+    <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+    <script>
+        var base = new Base64();
+        var carInfo = {};
+        $(document).ready(function () {
+            carInfo = JSON.parse($.cookie('carInfo'));
+            console.log(JSON.parse($.cookie('carInfo')))
+            $.cookie('carInfo', null)
+
+            $('.carInfo_logo img').attr('src', 'http://test.zhongqiguohui.com.cn/Content/Images/Carbrand/large/b5.jpg')
+
+            $('.brandSimple').html(getParam('brandName') + ' ' + getParam('seriesName'))
+
+            $('.brandFull').html(getParam('brandName') + ' ' + getParam('seriesName') + ' ' + carInfo.modelName)
+
+            $('.carMileCityDate .cityDate').html(getParam('prov') + '&nbsp;&nbsp;' + getParam('city') + '&nbsp;&nbsp;' + getParam('year') + '年' + getParam('month') + '月' + getParam('day') + '日')
+
+            $('.carMileCityDate .mile').html('里程：' + getParam('mile') + 'KM')
+
+            askPageHtml('getProjectHtml', '/cardService/GetProjectHtml')
+
+            // askPageHtml('getExtendInsurePrice', '/cardService/GetExtendInsurePrice', '{""}')
+
+        });
+
+        function askPageHtml(type, url, param) {
+            $.ajax({
+                type: "post",
+                url: testApi + url,
+                data: param ? {
+                    "reqMsg": base.encode(param)
+                } : '',
+                contentType: 'text/plain',
+                async: true,
+                // crossDomain: true,
+                dataType: "text",
+                success: function (data) {
+                    if (type == 'getProjectHtml') {
+                        getProjectHtml(data)
+                    } else if (type === 'getInsurePlanHtml') {
+                        getInsurePlanHtml(data)
+                    }
+                    else if (type === 'getExtendInsurePrice') {
+                        getExtendInsurePrice(data)
+                    }
+                }
+            });
+        }
+
+        function getProjectHtml(data) {
+            if (data !== '') {
+                if (data === 'inPageChange') {
+                    askPageHtml('getInsurePlanHtml', '/cardService/GetInsurePlanHtml', '{"price": "' + carInfo.high_price + '","regDate": "' + carInfo.regDate + '","pid": "' + $('#projectChoice').val() + '", "keepYears": "' + $('#QADate').val() + '","firstprice": "' + carInfo.first_year_price + '"}')
+                } else {
+                    $('#projectChoice').append(data)
+                    askPageHtml('getInsurePlanHtml', '/cardService/GetInsurePlanHtml', '{"price": "' + carInfo.high_price + '","regDate": "' + carInfo.regDate + '","pid": "' + $('#projectChoice').val() + '", "keepYears": "' + $('#QADate').val() + '","firstprice": "' + carInfo.first_year_price + '"}')
+                }
+            } else {
+                // 请求失败逻辑
+            }
+
+        }
+
+        function getInsurePlanHtml(data) {
+            if (data == "") {
+                $('#tb-content').html('<tr><td style="font-size:16px;">很抱歉，暂无任何投保计划！<td></tr>');
+                $('#s-price').html('暂无报价！');
+                $('#txtOptype').val(1);
+                $('#btnNext').hide();
+            } else {
+                $('#btnNext').show();
+                $('#tb-content').html(data);
+                $('#txtInsureYear').val($('#a-y-1').attr('data-year'));
+                $('#txtExtendInsureDate').val($('#a-y-1').attr('data-date'))
+                $('#txtInsureRebate').val($('#a-y-1').attr('data-rebate'));
+                $('#txtInsurePrice').val($('#a-p-1').attr('data-price'));
+                $('#txtInsurePrice1').val($('#a-p-1').attr('data-price1'));
+                $('#txtInsurePrice2').val($('#a-p-1').attr('data-price2'));
+                $('#txtCustomerId').val(0);
+
+                CalcExtendInsure();
+            }
+
+
+            // askPageHtml('getExtendInsurePrice', '/cardService/GetExtendInsurePrice', '{"year": "1", "pid": "2", "keepYears": "3", "price": "' + $('#tb-content .td-p-hov a').attr('data-price2') + '", "rebate": "' + $('#tb-content .td-y-hov a').attr('data-rebate') + '", "regDate": "' + getParam('year') + '-' + getParam('month') + '-' + getParam('day') + '", "carBrandId": "' + getParam('brandId') + '"}')
+        }
+
+        function getExtendInsurePrice(data) {
+            if (parseInt(data)) {
+                $('#s-price').attr('data-price', data);
+                $('#s-price').html(data + '.00' + '元');
+                $('#s-pricepay').attr('data-price', data);
+                $('#s-pricepay').html(data + '.00' + '元');
+            }
+        }
+
+        //选择延长保修期
+        function ChooseExtendYear(i) {
+            if ($(".td-y-hov").length > 0)
+                $(".td-y-hov").removeClass("td-y-hov").removeAttr("style").removeAttr("class");
+            $('#a-y-' + i).parent().addClass("td-y-hov");
+            $('#txtInsureYear').val($('#a-y-' + i).attr('data-year'));
+            $('#txtExtendInsureDate').val($('#a-y-' + i).attr('data-date'));
+            $('#txtInsureRebate').val($('#a-y-' + i).attr('data-rebate'));
+
+            CalcExtendInsure();
+        }
+        //选择保额
+        function ChooseInsure(i) {
+            if ($(".td-p-hov").length > 0)
+                $(".td-p-hov").removeClass("td-p-hov").removeAttr("style").removeAttr("class");
+            $('#a-p-' + i).parent().addClass("td-p-hov");
+            $('#txtInsurePrice').val($('#a-p-' + i).attr('data-price'));
+            $('#txtInsurePrice1').val($('#a-p-' + i).attr('data-price1'));
+            $('#txtInsurePrice2').val($('#a-p-' + i).attr('data-price2'));
+            CalcExtendInsure();
+        }
+        //计算延保价格
+        function CalcExtendInsure() {
+
+
+            askPageHtml('getExtendInsurePrice', '/cardService/GetExtendInsurePrice', '{"year": "' + $('#txtInsureYear').val() + '", "pid": "' + $('#projectChoice').val() + '", "keepYears": "' + $('#QADate').val() + '", "price": "' + $('#txtInsurePrice2').val() + '", "rebate": "' + $('#txtInsureRebate').val() + '", "regDate": "' + carInfo.regDate + '", "carBrandId": "' + carInfo.brandId + '"}')
+
+        }
+
+        /** 
+         * 获取指定的URL参数值 
+         * URL:http://www.quwan.com/index?name=tyler 
+         * 参数：paramName URL参数 
+         * 调用方法:getParam("name") 
+         * 返回值:tyler 
+         */
+        function getParam(param) {
+            var requestString = location.search;
+            var reg = new RegExp("(?:\\?|&)" + param + "=(.*?)(?:&|$)");
+            if (reg.test(requestString)) {
+                return decodeURIComponent(RegExp.$1);
+            } else {
+                return '';
+            }
+        }
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,509 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit|ie-comp|ie-stand">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <link rel="Bookmark" href="/favicon.ico">
+  <link rel="Shortcut Icon" href="/favicon.ico" />
+  <!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+
+<![endif]-->
+  <link href="static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+  <link href="static/h-ui.admin/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+  <link href="lib/Hui-iconfont/1.0.8/iconfont.css" rel="stylesheet" type="text/css" />
+
+  <!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+  <title>延保服务</title>
+  <style>
+    .span {
+      width: 100%;
+      height: 26px;
+      line-height: 26px;
+      float: left;
+      padding-top: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      color: gray;
+      border-bottom: 1px dotted #e5e5e5;
+    }
+
+    .span-1 {
+      float: left;
+      width: 100%;
+      height: 50px;
+      line-height: 50px;
+      font-family: 'Microsoft YaHei';
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .sel {
+      border: 1px solid #94B8D7 !important;
+      height: 28px;
+      padding: 2px;
+    }
+
+    .txt {
+      width: 100%;
+      *width: 90%;
+      margin: 0;
+      padding: 5px 4px;
+      *padding: 5px 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    #txtCarBrandType {
+      width: 100%;
+      *width: 90%;
+      margin: 0;
+      padding: 5px 4px;
+      *padding: 5px 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .tdPointer {
+      cursor: pointer;
+    }
+
+    .id_center {
+      text-align: center !important
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pd-20">
+    <table class="table table-sort">
+      <tbody>
+        <tr>
+          <td colspan="3" style="height: 40px;">
+            <table
+              style="width: 100%; height: 100%; border-top: 1px dashed #e5e5e5; border-bottom: 1px dashed #e5e5e5;">
+              <tbody>
+                <tr>
+                  <td style="width: 32%;">
+                    <span class="span">车辆品牌类型</span>
+                    <span class="span-1">
+                      <input id="txtCarBrandType" class="txt" disabled="disabled">
+                    </span>
+                  </td>
+                  <td style="width: 36%;">
+                    <span class="span">登记地点时间</span>
+                    <span class="span-1">
+                      <select id="sltProvName" class="sel" style="width: 20%;" onchange="SearchCheCity(this.value)">
+                        <option value="1">北京</option>
+                        <option value="2">天津</option>
+                        <option value="3">上海</option>
+                        <option value="4">重庆</option>
+                        <option value="5">河北</option>
+                        <option value="6">山西</option>
+                        <option value="8">辽宁</option>
+                        <option value="9">吉林</option>
+                        <option value="10">黑龙江</option>
+                        <option value="11">江苏</option>
+                        <option value="12">浙江</option>
+                        <option value="13">安徽</option>
+                        <option value="14">福建</option>
+                        <option value="15">江西</option>
+                        <option value="16">山东</option>
+                        <option value="17">河南</option>
+                        <option value="18">湖北</option>
+                        <option value="19">湖南</option>
+                        <option value="20">广东</option>
+                        <option value="21">甘肃</option>
+                        <option value="22">四川</option>
+                        <option value="24">贵州</option>
+                        <option value="25">海南</option>
+                        <option value="26">云南</option>
+                        <option value="27">青海</option>
+                        <option value="28">陕西</option>
+                        <option value="29">广西</option>
+                        <option value="30">西藏</option>
+                        <option value="31">宁夏</option>
+                        <option value="32">新疆</option>
+                        <option value="33">内蒙古</option>
+                      </select>
+                      <select id="sltCityName" class="sel" style="width: 24%;">
+                        <option value="1">北京</option>
+                      </select>
+                      <select id="sltRegYear" class="sel" style="width: 20%"></select>
+                      <select id="sltRegMonth" class="sel" style="width: 15%" onchange="SearchDay()"></select>
+                      <select id="sltRegDay" class="sel" style="width: 15%"></select>
+                    </span>
+                  </td>
+                  <td style="width: 32%;">
+                    <span class="span">当前行驶里程（公里）</span>
+                    <span class="span-1">
+                      <input id="txtMile" type="text" class="input-text radius" data-options="min:0,max:150000"
+                        value="0" style="width: 40%; margin-right: 50px;"><input type="hidden" value="0">
+                      <button class="btn btn-primary radius" onclick="SearchInsure()">查询延保价格</button>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr class="">
+          <td colspan="3">
+            <table>
+              <tbody>
+                <tr style="font-size: 0px">
+                  <td style="width: 32%; vertical-align: top">
+                    <div class="panel panel-primary">
+                      <div class="panel-header">选择品牌</div>
+                      <div class="panel-body" style="height: 614px">
+                        <div id="divSearchCarBrand" style="text-align: center;" class="datagrid-toolbar">
+                          <div style="margin-bottom: 15px">
+                            <input id="txtSearchCarBrand" class="input-text radius size-M"
+                              style="width: 80%; color: #333;" placeholder="输入关键字或品牌名称拼音首字母"
+                              onkeydown="focusButton('btnSearchCarBrand')">
+                            <button onclick="SearchCarBrand()" class="btn btn-secondary radius" sty><i
+                                class="Hui-iconfont Hui-iconfont-search2"></i>查询</button>
+                          </div>
+
+                          <table class="table table-border table-bordered radius table-hover" id="carBrandListTable"
+                            style="table-layout:fixed" cellspacing="0"></table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="width: 36%; vertical-align: top">
+                    <div class="panel panel-primary">
+                      <div class="panel-header">选择车系</div>
+                      <div class="panel-body" style="height: 614px">
+                        <div id="divSearchCarSeries" style="text-align: center;" class="datagrid-toolbar">
+                          <div style="margin-bottom: 15px">
+                            <input id="txtSearchCarSeries" class="input-text radius size-M"
+                              style="width: 80%; color: #333;" placeholder="输入关键字或品牌名称拼音首字母"
+                              onkeydown="focusButton('btnSearchCarSeries')">
+                            <button onclick="SearchCarSeries()" class="btn btn-secondary radius"><i
+                                class="Hui-iconfont Hui-iconfont-search2"></i>查询</button>
+                          </div>
+
+                          <table id="carSeriesListTable" class="table table-border table-bordered radius table-hover"
+                            style="table-layout:fixed" cellspacing="0">
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="width: 32%; vertical-align: top">
+                    <div class="panel panel-primary">
+                      <div class="panel-header">选择车型</div>
+                      <div class="panel-body" style="height: 614px">
+                        <div id="divSearchCarModel" style="text-align: center;" class="datagrid-toolbar">
+                          <div style="margin-bottom: 15px">
+                            <input id="txtSearchCarModel" class="input-text radius size-M"
+                              style="width: 80%; color: #333;" placeholder="输入关键字或品牌名称拼音首字母"
+                              onkeydown="focusButton('btnSearchCarModel')">
+                            <button onclick="SearchCarModel()" class="btn btn-secondary radius"><i
+                                class="Hui-iconfont Hui-iconfont-search2"></i>查询</button>
+                          </div>
+                          <table id="carModelListTable" class="table table-border table-bordered radius table-hover"
+                            style="table-layout:fixed" cellspacing="0">
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script type="text/javascript" src="lib/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript" type="text/javascript" src="lib/layer/2.4/layer.js"></script>
+  <script src="./lib/node_modules/babel-polyfill/dist/polyfill.js"></script>
+  <script type="text/javascript" src="lib/map.js"></script>
+  <script type="text/javascript" src="static/h-ui/js/H-ui.min.js"></script>
+  <script type="text/javascript" src="static/h-ui.admin/js/H-ui.admin.js"></script>
+  <script type="text/javascript" src="lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+  <script>
+    var brandSwitch = true,
+      seriesSwitch = true,
+      modelSwitch = true;
+    var BrandColumns = [
+      {
+        "data": null,
+        "targets": 0,
+        "title": "序号",
+        "width": "40",
+        "className": "id_center"
+      },
+      {
+        "data": "initial",
+        "title": "首字母",
+        "render": function (data, type, row, meta) {
+          return '<div brandId="' + row.brand_id + '">' + row.initial + '<div>'
+        },
+        "width": "80",
+        "className": "id_center"
+      },
+      {
+        "data": "brand_name",
+        "title": "汽车品牌"
+      }
+    ];
+    var SeriesColumns = [
+      {
+        "data": null,
+        "targets": 0,
+        "title": "序号",
+        "width": "40",
+        "className": "id_center"
+      },
+      {
+        "data": "series_name",
+        "title": "车系名称",
+        "render": function (data, type, row, meta) {
+          return '<div seriesId="' + row.series_id + '">' + row.series_name + '<div>'
+        }
+      }
+    ]
+    var ModelColumns = [
+      {
+        "data": null,
+        "targets": 0,
+        "title": "序号",
+        "width": "40",
+        "className": "id_center"
+      },
+      {
+        "data": "model_name",
+        "title": "车型名称"
+      }
+    ]
+    $(document).ready(function () {
+
+      initCarList('Brand', './static/showCarBrandList.json', BrandColumns, null, resolve, reject)
+      initCarList('Series', 'https://www.easy-mock.com/mock/5cecbb5d90fd6859471cfc9f/ShowCarSeriesList', SeriesColumns, null)
+
+      initCarList('Model', 'https://www.easy-mock.com/mock/5cecbb5d90fd6859471cfc9f/ShowCarList', ModelColumns, null)
+
+
+      $('#carBrandListTable tbody').on('click', 'tr', function () {
+        selectBrand($(this))
+      });
+      $('#carSeriesListTable tbody').on('click', 'tr', function () {
+        selectSeries($(this))
+      });
+    });
+
+    // function toFetch(url) {
+    //   return fetch(url)
+    //     .then(res => res.json())
+    //     .catch(err => new Promise(resolve => resolve(err)))
+    // }
+
+
+    // 用promise分别请求品牌, 车系, 车型列表
+
+    var carBrandList = function () {
+      return new Promise(function (resolve, reject) {
+        initCarList('Brand', './static/showCarBrandList.json', BrandColumns, null, resolve, reject)
+      })
+    }
+
+    var carSeriesList = function () {
+      return new Promise(function (resolve, reject) {
+        initCarList('Series', 'https://www.easy-mock.com/mock/5cecbb5d90fd6859471cfc9f/ShowCarSeriesList', SeriesColumns, null, resolve, reject)
+      })
+    }
+
+    var carModelList = function () {
+      return new Promise(function (resolve, reject) {
+        initCarList('Model', 'https://www.easy-mock.com/mock/5cecbb5d90fd6859471cfc9f/ShowCarList', ModelColumns, null, resolve, reject)
+      })
+    }
+
+    // var promiseArray = [carBrandList(), carSeriesList(), carModelList()]
+    function carListAll(arr) {
+      var handlePromise = Promise.all(arr.map(function (promiseItem) {
+        return promiseItem.catch(function (err) {
+          return err
+        })
+      }))
+
+      handlePromise.then(function (values) {
+        console.log('all promise are resolved', values)
+      }).catch(function (reason) {
+        console.log('promise reject failed reason', reason)
+      })
+    }
+
+
+    /**
+     * @method
+     * @param {str} type 表格列表的类型(品牌 车系 型号)
+     * @param {str} url 请求地址
+     * @param {arr} columns 表头数据
+     * @param {num} brandId 车型id
+     * @param {fun} resolve promise成功回调
+     * @param {fun} reject promise失败回调
+     * ......
+     * @desc 根据不同类型生成表格
+     */
+    function initCarList(type, url, columns, brandId, resolve, reject) {
+      $('#car' + type + 'ListTable').DataTable({
+        "processing": true,
+        "searching": false,
+        "serverSide": true,
+        "autoWidth": false,
+        "ajax": function (data, callback, settings) {
+          //封装请求参数
+          var param = {};
+          $.ajax({
+            type: "GET",
+            url: url,
+            cache: false,  //禁用缓存
+            data: param,  //传入组装的参数
+            dataType: "json",
+            success: function (result) {
+              var returnData = {};
+              // 封装返回数据
+              // 测试阶段模拟初始化状态 生产阶段可省略判断过程
+              if (type === 'Series' && seriesSwitch) {
+                console.log(1)
+                returnData.draw = 1;//这里直接自行返回了draw计数器,应该由后台返回
+                returnData.recordsTotal = 0;//返回数据全部记录
+                returnData.recordsFiltered = 0;//后台不实现过滤功能，每次查询均视作全部结果
+                returnData.data = [];//返回的数据列表
+              } else if (type === 'Model' && modelSwitch) {
+                console.log(2)
+                returnData.draw = 1;//这里直接自行返回了draw计数器,应该由后台返回
+                returnData.recordsTotal = 0;//返回数据全部记录
+                returnData.recordsFiltered = 0;//后台不实现过滤功能，每次查询均视作全部结果
+                returnData.data = [];//返回的数据列表
+              } else {
+                console.log(3)
+                returnData.draw = 1;//这里直接自行返回了draw计数器,应该由后台返回
+                returnData.recordsTotal = result.total;//返回数据全部记录
+                returnData.recordsFiltered = result.total;//后台不实现过滤功能，每次查询均视作全部结果
+                returnData.data = result.data;//返回的数据列表
+              }
+              if (resolve) {
+                resolve(result)
+              }
+              callback(returnData);
+            },
+            error: function (err) {
+              if (reject) {
+                reject(err)
+              }
+            }
+          });
+        },
+        "fnDrawCallback": function (data) {
+          var api = this.api();
+          var startIndex = api.context[0]._iDisplayStart;//获取到本页开始的条数
+          api.column(0).nodes().each(function (cell, i) {
+            cell.innerHTML = startIndex + i + 1;
+          });
+        },
+        "drawCallback": function (settings, data) {
+          //
+        },
+        // 垂直滚动条
+        "scrollY": "500px",
+        "scrollCollapse": true,
+        "paging": false,
+        "info": false,
+        "columns": columns,
+        destroy: true,
+        language: {　　// 这是修改语言的显示
+          paginate: {
+            first: "首条",
+            previous: "前一页",
+            next: "下一页",
+            last: "末页"
+          },
+          "info": false,
+          "infoEmpty": "暂无相关数据",
+          "search": "关键字",
+          "zeroRecords": "暂无相关数据",
+          "decimal": ".",
+          "thousands": ","
+        }
+      })
+    }
+    /**
+    * 方法说明
+    * @method 
+    * @des 点击具体某一品牌 获取该品牌车系数据
+    */
+    function selectBrand(dom) {
+      console.log(dom.find('td:nth-child(2)').find('div').attr("brandId"))
+      var selectId = dom.find('td:nth-child(2)').find('div').attr("brandId")
+      seriesSwitch = false
+      initCarList('Series', 'https://www.easy-mock.com/mock/5cecbb5d90fd6859471cfc9f/ShowCarSeriesList', SeriesColumns, selectId, null, null)
+    }
+
+    function selectSeries(dom) {
+      console.log(dom.find('td:nth-child(2)').find('div').attr("brandId"))
+      var seriesId = dom.find('td:nth-child(2)').find('div').attr("seriesId")
+      modelSwitch = false
+      initCarList('Model', 'https://www.easy-mock.com/mock/5cecbb5d90fd6859471cfc9f/ShowCarList', ModelColumns, seriesId, null, null)
+    }
+
+    /**
+   * 方法说明
+   * @method SearchInsure
+   * @des 查询延保价格
+   */
+    function SearchInsure() {
+      console.log("查询延保价格")
+    }
+
+    /**
+    * 方法说明
+    * @method SearchCarBrand
+    * @des 查找品牌
+    */
+    function SearchCarBrand() {
+      console.log("查找品牌")
+    }
+
+    /**
+   * 方法说明
+   * @method SearchCarBrand
+   * @param {string} key 汽车品牌关键字或品牌名称拼音首字母
+   * @des 查找品牌
+   */
+    function focusButton(key) {
+      console.log("输入关键字模糊搜索")
+    }
+
+    /**
+   * 方法说明
+   * @method initCarBrandList
+   * @des 初始化品牌列表
+   */
+
+    /*ie兼容 Promise*/
+    function isIE() {
+      if (!!window.ActiveXObject || "ActiveXObject" in window) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  </script>
+</body>
+
+</html>

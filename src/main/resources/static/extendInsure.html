@@ -1,0 +1,638 @@
+﻿<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit|ie-comp|ie-stand">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <link rel="Bookmark" href="/favicon.ico">
+  <link rel="Shortcut Icon" href="/favicon.ico" />
+  <!--[if lt IE 9]>
+<script type="text/javascript" src="lib/html5shiv.js"></script>
+<script type="text/javascript" src="lib/respond.min.js"></script>
+
+<![endif]-->
+  <link href="static/h-ui/css/H-ui.min.css" rel="stylesheet" type="text/css" />
+  <link href="static/h-ui.admin/css/H-ui.admin.css" rel="stylesheet" type="text/css" />
+  <link href="lib/Hui-iconfont/1.0.8/iconfont.css" rel="stylesheet" type="text/css" />
+
+  <!--[if IE 6]>
+<script type="text/javascript" src="lib/DD_belatedPNG_0.0.8a-min.js" ></script>
+<script>DD_belatedPNG.fix('*');</script>
+<![endif]-->
+  <title>延保服务</title>
+  <style>
+    .span {
+      width: 100%;
+      height: 26px;
+      line-height: 26px;
+      float: left;
+      padding-top: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      color: gray;
+      border-bottom: 1px dotted #e5e5e5;
+    }
+
+    .span-1 {
+      float: left;
+      width: 100%;
+      height: 50px;
+      line-height: 50px;
+      font-family: 'Microsoft YaHei';
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .sel {
+      border: 1px solid #94B8D7 !important;
+      height: 28px;
+      padding: 2px;
+    }
+
+    .txt {
+      width: 100%;
+      *width: 90%;
+      margin: 0;
+      padding: 5px 4px;
+      *padding: 5px 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    #txtCarBrandType {
+      width: 100%;
+      *width: 90%;
+      margin: 0;
+      padding: 5px 4px;
+      *padding: 5px 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    .tdPointer {
+      cursor: pointer;
+    }
+
+    .id_center {
+      text-align: center !important
+    }
+
+    .tableListActive {
+      background: #b7d2ff
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pd-20">
+    <table class="table table-sort">
+      <tbody>
+        <tr>
+          <td colspan="3" style="height: 40px;">
+            <table
+              style="width: 100%; height: 100%; border-top: 1px dashed #e5e5e5; border-bottom: 1px dashed #e5e5e5;">
+              <tbody>
+                <tr>
+                  <td style="width: 32%;">
+                    <span class="span">车辆品牌类型</span>
+                    <span class="span-1">
+                      <input id="txtCarBrandType" class="txt" disabled="disabled">
+                    </span>
+                  </td>
+                  <td style="width: 36%;">
+                    <span class="span">登记地点时间</span>
+                    <span class="span-1">
+                      <select id="sltProvName" class="sel" style="width: 20%;"
+                        onchange="SearchCheProv(this.value, this)">
+                        <option selected="selected" value="1">北京</option>
+                      </select>
+                      <select id="sltCityName" class="sel" style="width: 24%;"
+                        onchange="SearchCheCity(this.value, this)">
+                        <option selected="selected" value="1">北京</option>
+                      </select>
+                      <select id="sltRegYear" class="sel" style="width: 20%"
+                        onchange="SearchDate(this.value, 'year', this)"></select>
+                      <select id="sltRegMonth" class="sel" style="width: 15%"
+                        onchange="SearchDate(this.value, 'month', this)"></select>
+                      <select id="sltRegDay" class="sel" style="width: 15%"
+                        onchange="SearchDate(this.value, 'day', this)"></select>
+                    </span>
+                  </td>
+                  <td style="width: 32%;">
+                    <span class="span">当前行驶里程（公里）</span>
+                    <span class="span-1">
+                      <input id="txtMile" type="text" class="input-text radius" data-options="min:0,max:150000" value=""
+                        style="width: 40%; margin-right: 50px;"><input type="hidden" value="0">
+                      <button class="btn btn-primary radius" onclick="SearchInsure()">查询延保价格</button>
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr class="">
+          <td colspan="3">
+            <table>
+              <tbody>
+                <tr style="font-size: 0px">
+                  <td style="width: 32%; vertical-align: top">
+                    <div class="panel panel-primary">
+                      <div class="panel-header">选择品牌</div>
+                      <div class="panel-body" style="height: 614px">
+                        <div id="divSearchCarBrand" style="text-align: center;" class="datagrid-toolbar">
+                          <div style="margin-bottom: 15px">
+                            <input id="txtSearchCarBrand" class="input-text radius size-M"
+                              style="width: 200px; color: #333; font-size: 12px" placeholder="输入关键字或品牌名称拼音首字母"
+                              onkeydown="focusButton('btnSearchCarBrand')">
+                            <button onclick="SearchCarBrand()" class="btn btn-secondary radius" sty><i
+                                class="Hui-iconfont Hui-iconfont-search2"></i>查询</button>
+                          </div>
+
+                          <table class="table table-border table-bordered radius" id="carBrandListTable"
+                            style="table-layout:fixed" cellspacing="0"></table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="width: 36%; vertical-align: top">
+                    <div class="panel panel-primary">
+                      <div class="panel-header">选择车系</div>
+                      <div class="panel-body" style="height: 614px">
+                        <div id="divSearchCarSeries" style="text-align: center;" class="datagrid-toolbar">
+                          <div style="margin-bottom: 15px">
+                            <input id="txtSearchCarSeries" class="input-text radius size-M"
+                              style="width: 200px; color: #333; font-size: 12px" placeholder="输入关键字或品牌名称拼音首字母"
+                              onkeydown="focusButton('btnSearchCarSeries')">
+                            <button onclick="SearchCarSeries()" class="btn btn-secondary radius"><i
+                                class="Hui-iconfont Hui-iconfont-search2"></i>查询</button>
+                          </div>
+
+                          <table id="carSeriesListTable" class="table table-border table-bordered radius"
+                            style="table-layout:fixed" cellspacing="0">
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td style="width: 32%; vertical-align: top">
+                    <div class="panel panel-primary">
+                      <div class="panel-header">选择车型</div>
+                      <div class="panel-body" style="height: 614px">
+                        <div id="divSearchCarModel" style="text-align: center;" class="datagrid-toolbar">
+                          <div style="margin-bottom: 15px">
+                            <input id="txtSearchCarModel" class="input-text radius size-M"
+                              style="width: 200px; color: #333; font-size: 12px" placeholder="输入关键字或品牌名称拼音首字母"
+                              onkeydown="focusButton('btnSearchCarModel')">
+                            <button onclick="SearchCarModel()" class="btn btn-secondary radius"><i
+                                class="Hui-iconfont Hui-iconfont-search2"></i>查询</button>
+                          </div>
+                          <table id="carModelListTable" class="table table-border table-bordered radius"
+                            style="table-layout:fixed" cellspacing="0">
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script src="./static/projectInfo.js"></script>
+  <script type="text/javascript" src="./lib/jquery/1.9.1/jquery.min.js"></script>
+  <script src="./lib/jquery.cookie.js"></script>
+  <script src="./lib/base64.js"></script>
+  <script src="./lib/jQuery-ajaxTransport-XDomainRequest.js"></script>
+  <script type="text/javascript" type="text/javascript" src="./lib/layer/2.4/layer.js"></script>
+  <script type="text/javascript" src="./static/h-ui/js/H-ui.min.js"></script>
+  <script type="text/javascript" src="./static/h-ui.admin/js/H-ui.admin.js"></script>
+  <script type="text/javascript" src="./lib/datatables/1.10.0/jquery.dataTables.min.js"></script>
+
+  <script>
+    var priceAskParam = {
+      modelId: '',
+      city: '',
+      regDate: '',
+      mile: '',
+      price: '',
+    };
+
+    var selectedBrand, selectedSeries, selectedModel;
+
+    var dataTypeColumns = function (brandName, seriesName) {
+
+      return {
+        Brand: [
+          {
+            "data": null,
+            "targets": 0,
+            "title": "序号",
+            "width": "40",
+            "className": "id_center"
+          },
+          {
+            "data": "initial",
+            "title": "首字母",
+            "render": function (data, type, row, meta) {
+              return '<div brandId="' + row.brand_id + '">' + row.initial + '<div>'
+            },
+            "width": "80",
+            "className": "id_center"
+          },
+          {
+            "data": "brand_name",
+            "title": "汽车品牌"
+          }
+        ],
+        Series: [
+          {
+            "data": null,
+            "targets": 0,
+            "title": "序号",
+            "width": "40",
+            "className": "id_center"
+          },
+          {
+            "data": "series_name",
+            "title": "车系名称",
+            "render": function (data, type, row, meta) {
+              var brandNameTemp = brandName ? brandName : ''
+              return '<div seriesId="' + row.series_id + '" brandName="' + brandNameTemp + '">' + row.series_name + '<div>'
+            }
+          }
+        ],
+        Model: [
+          {
+            "data": null,
+            "targets": 0,
+            "title": "序号",
+            "width": "40",
+            "className": "id_center"
+          },
+          {
+            "data": "model_name",
+            "title": "车型名称",
+            "render": function (data, type, row, meta) {
+              var brandNameTemp = brandName ? brandName : '';
+              var seriesNameTemp = seriesName ? seriesName : '';
+              return '<div seriesName="' + seriesNameTemp + '" brandName="' + brandNameTemp + '" max_reg_year="' + row.max_reg_year + '" min_reg_year="' + row.min_reg_year + '" model_id="' + row.model_id + '" model_price="' + row.model_price + '">' + row.model_name + '<div>'
+            }
+          }
+        ]
+      }
+    }
+
+    var provinceList = [];
+    var base = new Base64();
+    var brandId;
+    var seriesId;
+    $(document).ready(function () {
+      // return
+
+
+      ShowCheCity('{"type": "1", "id": "1"}', '#sltProvName')
+
+
+      // 初始化页面3个table
+      initCarList('Brand', testApi + '/cardService/ShowCarSeriesList', '{"id": "0","Search": ""}', dataTypeColumns().Brand);
+      initCarList('Series', testApi + '/cardService/ShowCarSeriesList', '{"id": "-1","Search": ""}', dataTypeColumns().Series);
+      initCarList('Model', testApi + '/cardService/ShowCarList', '{"id": "-1","Search": ""}', dataTypeColumns().Model);
+
+      // 列表每一列的点击操作
+      $('#carBrandListTable tbody').on('click', 'tr', function () {
+        $(this).siblings().removeClass('tableListActive')
+        $(this).addClass('tableListActive')
+        selectBrand($(this))
+      });
+      $('#carSeriesListTable tbody').on('click', 'tr', function () {
+        $(this).siblings().removeClass('tableListActive')
+        $(this).addClass('tableListActive')
+        selectSeries($(this))
+      });
+      $('#carModelListTable tbody').on('click', 'tr', function () {
+        $(this).siblings().removeClass('tableListActive')
+        $(this).addClass('tableListActive')
+        selectModel($(this))
+      });
+
+    });
+
+
+    /**
+    * @method
+    * @param {str} param ajax请求参数
+    * @param {str} domId 被渲染元素的id
+    * @desc 初始化城市列表
+    */
+    function ShowCheCity(param, domId) {
+      $.ajax({
+        type: "post",
+        url: testApi + "/cardService/ShowCheCity",
+        data: {
+          "reqMsg": base.encode(param)
+        },
+        contentType: 'text/plain',
+        async: true,
+        // crossDomain: true,
+        dataType: "text",
+        success: function (data) {
+          var dataJson = JSON.parse(base.decode(data));
+          if (dataJson.code === 200 || dataJson.code === '200') {
+            $(domId).empty();
+            for (var i = 0; i < dataJson.msg.length; i++) {
+              $(domId).append('<option value="' + dataJson.msg[i].Id + '">' + dataJson.msg[i].Name + '</option>');
+            };
+
+            $(domId + ' option').eq(0).attr('selected', true).siblings().attr('selected', false);
+          } else {
+            alert("获取城市列表失败");
+          }
+        }
+      });
+    }
+
+    /**
+    * @method
+    * @param {str} val 表格列表的类型(品牌 车系 型号)
+    * @param {str} _this 被操作的元素
+    * @desc 选择省
+    */
+
+    function SearchCheProv(val, _this) {
+      $(_this).find("option").attr("selected", false)
+      $(_this).find("option[value='" + val + "']").attr("selected", "selected")
+      ShowCheCity('{"type": "2", "id": "' + val + '"}', '#sltCityName')
+    }
+
+    /**
+    * @method
+    * @param {str} val 表格列表的类型(品牌 车系 型号)
+    * @param {str} _this 被操作的元素
+    * @desc 选择市
+    */
+
+    function SearchCheCity(val, _this) {
+      $(_this).find("option").attr("selected", false)
+      $(_this).find("option[value='" + val + "']").attr("selected", "selected")
+    }
+
+    //=======================================================================
+
+
+    /**
+     * @method
+     * @param {str} type 表格列表的类型(品牌 车系 型号)
+     * @param {str} url 请求地址
+     * @param {str} param 请求参数
+     * @param {arr} columns 表头数据
+     * ......
+     * @desc 根据不同类型生成表格
+     */
+    function initCarList(type, url, param, columns) {
+      // eval("var " + type + "Table");
+      $('#car' + type + 'ListTable').DataTable({
+        "processing": true,
+        "searching": false,
+        "serverSide": true,
+        "autoWidth": false,
+        "ajax": function (data, callback, settings) {
+          //封装请求参数
+          $.ajax({
+            type: "post",
+            url: url,
+            cache: false,  //禁用缓存
+            contentType: 'text/plain',
+            async: true,
+            data: {
+              "reqMsg": base.encode(param)
+            },  //传入组装的参数
+            dataType: "text",
+            success: function (result) {
+              var returnData = {};
+              var dataDecode = JSON.parse(base.decode(result));
+              if (dataDecode.code !== 200 && dataDecode.code !== '200') {
+                alert("请求错误")
+                return
+              };
+              returnData.draw = 1;//这里直接自行返回了draw计数器,应该由后台返回
+              returnData.recordsTotal = dataDecode.msg.length;//返回数据全部记录
+              returnData.recordsFiltered = 0;//后台不实现过滤功能，每次查询均视作全部结果
+              returnData.data = dataDecode.msg;//返回的数据列表
+              // 封装返回数据
+              callback(returnData);
+            },
+            error: function (err) {
+              console.log(err)
+            }
+          });
+        },
+        "fnDrawCallback": function (data) {
+          var api = this.api();
+          var startIndex = api.context[0]._iDisplayStart;//获取到本页开始的条数
+          api.column(0).nodes().each(function (cell, i) {
+            cell.innerHTML = startIndex + i + 1;
+          });
+        },
+        "drawCallback": function (settings, data) {
+          //
+        },
+        // 垂直滚动条
+        "scrollY": "500px",
+        "scrollCollapse": true,
+        "paging": false,
+        "info": false,
+        "columns": columns,
+        destroy: true,
+        language: {　　// 这是修改语言的显示
+          paginate: {
+            first: "首条",
+            previous: "前一页",
+            next: "下一页",
+            last: "末页"
+          },
+          "info": false,
+          "infoEmpty": "暂无相关数据",
+          "search": "关键字",
+          "zeroRecords": "暂无相关数据",
+          "decimal": ".",
+          "thousands": ","
+        }
+      })
+    }
+    /**
+    * 方法说明
+    * @method 
+    * @des 点击具体某一品牌 获取该品牌车系数据
+    */
+    function selectBrand(dom) {
+      brandId = dom.find('td:nth-child(2)').find('div').attr("brandId");
+      initCarList('Series', testApi + '/cardService/ShowCarSeriesList', '{"id": "' + brandId + '","Search": ""}', dataTypeColumns(dom.find('td:nth-child(3)').text()).Series);
+    }
+
+    function selectSeries(dom) {
+
+      seriesId = dom.find('td:nth-child(2)').find('div').attr("seriesId");
+      initCarList('Model', testApi + '/cardService/ShowCarList', '{"id": "' + seriesId + '","Search": ""}', dataTypeColumns(dom.find('td:nth-child(2)').find('div').attr("brandName"), dom.find('td:nth-child(2)').find('div').text()).Model);
+    }
+
+    function selectModel(dom) {
+      var domTemp3 = dom.find('td:nth-child(2)').find('div');
+      priceAskParam.modelId = domTemp3.attr("model_id");
+      priceAskParam.price = domTemp3.attr("model_price");
+      selectedBrand = domTemp3.attr("brandName");
+      selectedSeries = domTemp3.attr("seriesname");
+      selectedModel = domTemp3.text()
+      //汽车品牌 车系 车型 
+      var html = domTemp3.attr("brandName") + ' ' + domTemp3.attr("seriesName") + ' ' + domTemp3.text();
+      $('#txtCarBrandType').val(html);
+
+      $('#sltRegYear').empty();
+      $('#sltRegMonth').empty();
+      $('#sltRegDay').empty();
+      //动态加载可选年限
+      for (var i = 0; i <= parseInt(domTemp3.attr('max_reg_year')) - parseInt(domTemp3.attr('min_reg_year')); i++) {
+        $('#sltRegYear').append('<option value="' + (parseInt(domTemp3.attr('min_reg_year')) + i) + '">' + (parseInt(domTemp3.attr('min_reg_year')) + i) + '年</option>')
+      };
+
+      for (var i = 1; i <= 12; i++) {
+        $('#sltRegMonth').append('<option value="' + (i >= 10 ? i : '0' + i) + '">' + (i >= 10 ? i : '0' + i) + '月</option>')
+      };
+
+      for (var i = 1; i <= 31; i++) {
+        $('#sltRegDay').append('<option value="' + (i >= 10 ? i : '0' + i) + '">' + (i >= 10 ? i : '0' + i) + '日</option>')
+      }
+
+      $('#sltRegYear option').eq(0).attr('selected', true).siblings().attr('selected', false);
+      $('#sltRegMonth option').eq(0).attr('selected', true).siblings().attr('selected', false);
+      $('#sltRegDay option').eq(0).attr('selected', true).siblings().attr('selected', false);
+
+    }
+
+    function SearchDate(val, type, _this) {
+      $(_this).find('option').attr('selected', false)
+      if (type === 'month') {
+        var monthMaxDay = new Date(parseInt($('#sltRegYear').find("option[selected='selected']").val()), parseInt(val), 0).getDate();
+        for (var i = 1; i <= monthMaxDay; i++) {
+          $('#sltRegDay').append('<option value="' + (i >= 10 ? i : '0' + i) + '">' + (i >= 10 ? i : '0' + i) + '日</option>')
+        }
+      }
+      $(_this).find("option[value='" + val + "']").attr("selected", "selected")
+    }
+
+    /**
+   * 方法说明
+   * @method SearchInsure
+   * @des 查询延保价格
+   */
+    function SearchInsure() {
+      priceAskParam.mile = $('#txtMile').val()
+      if ($('#sltRegYear').val() && $('#sltRegMonth').val() && $('#sltRegDay').val()) {
+        priceAskParam.regDate = $('#sltRegYear').val() + '-' + $('#sltRegMonth').val() + '-' + $('#sltRegDay').val()
+      } else {
+        priceAskParam.regDate = ''
+      }
+      if ($(sltCityName).val()) {
+        priceAskParam.city = $(sltCityName).val()
+      } else {
+        priceAskParam.city = ''
+      }
+
+      for (var key in priceAskParam) {
+
+        if (priceAskParam[key] === '') {
+
+          alert("请输入查询关键字")
+          return
+        }
+      }
+      $.ajax({
+        type: "get",
+        url: "http://test.zhongqiguohui.com.cn/DataService/GetUsedCarPrice",
+        data: priceAskParam,
+        dataType: "json",
+        success: function (data) {
+          if (data.Code === 200 || data.Code === '200') {
+            // var obj = $('#askExtendInsurePrice', window.top.document);
+            $.cookie('modelName', selectedModel, { expires: 7 });
+            var carInfo = data.Rows;
+            carInfo.modelName = selectedModel;
+            carInfo.regDate = priceAskParam.regDate;
+            carInfo.brandId = brandId;
+            $.cookie('carInfo', JSON.stringify(carInfo), { expires: 7 })
+
+            creatIframe('askExtendInsurePrice.html?brandName=' + selectedBrand + '&year=' + $('#sltRegYear').val() + '&mile=' + $('#txtMile').val() + '&month=' + $('#sltRegMonth').val() + '&prov=' + $('#sltProvName').find("option[selected='selected']").text() + '&city=' + $('#sltCityName').find("option[selected='selected']").text() + '&day=' + $('#sltRegDay').val() + '&seriesName=' + selectedSeries, '延保询价')
+          }
+        }
+      });
+    }
+
+    /**
+    * 方法说明
+    * @method SearchCarBrand
+    * @des 查找品牌
+    */
+    function SearchCarBrand() {
+      console.log("查找品牌")
+      console.log($('#txtSearchCarBrand').val())
+      initCarList('Brand', testApi + '/cardService/ShowCarSeriesList', '{"id": "0","Search": "'+ $('#txtSearchCarBrand').val() +'"}', dataTypeColumns().Brand);
+    }
+
+    /**
+    * 方法说明
+    * @method SearchCarSeries
+    * @des 查找车系
+    */
+    function SearchCarSeries() {
+      console.log("查找车系")
+      console.log($('#txtSearchCarBrand').val())
+      initCarList('Series', testApi + '/cardService/ShowCarSeriesList', '{"id": "'+ (brandId ? brandId : '-1') +'","Search": "'+ $('#txtSearchCarSeries').val() +'"}', dataTypeColumns().Series);
+    }
+
+    /**
+    * 方法说明
+    * @method SearchCarModel
+    * @des 查找车型
+    */
+    function SearchCarModel() {
+      console.log("查找车型")
+      console.log($('#txtSearchCarModel').val())
+      initCarList('Model', testApi + '/cardService/ShowCarList', '{"id": "'+ (seriesId ? seriesId : '-1') +'","Search": "'+ $('#txtSearchCarModel').val() +'"}', dataTypeColumns().Model);
+    }
+
+    /**
+   * 方法说明
+   * @method focusButton
+   * @param {string} key 汽车品牌关键字或品牌名称拼音首字母
+   * @des 查找品牌
+   */
+    function focusButton(key) {
+      // console.log("输入关键字模糊搜索")
+    }
+
+    /**
+   * 方法说明
+   * @method initCarBrandList
+   * @des 初始化品牌列表
+   */
+
+    /*ie兼容 Promise*/
+    function isIE() {
+      if (!!window.ActiveXObject || "ActiveXObject" in window) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  </script>
+</body>
+
+</html>
