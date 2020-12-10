@@ -13,12 +13,42 @@ public class Sys_Menu {
     @GeneratedValue
     @NotNull
     private int id;
-    private String menu_addr;
+    private String menu_path;
     private String menu_title;
-    private String menu_intro;
+    private String menu_route_name;
+    private String menu_name;
+    private String menu_father;
+    private String menu_icon;
+    private int has_child;
+    private int is_menu;
     private BigInteger menu_create_time;
     private BigInteger menu_update_time;
     private int delete_state;
+
+
+    public String getMenu_route_name() {
+        return menu_route_name;
+    }
+
+    public void setMenu_route_name(String menu_route_name) {
+        this.menu_route_name = menu_route_name;
+    }
+
+    public int getHas_child() {
+        return has_child;
+    }
+
+    public void setHas_child(int has_child) {
+        this.has_child = has_child;
+    }
+
+    public String getMenu_icon() {
+        return menu_icon;
+    }
+
+    public void setMenu_icon(String menu_icon) {
+        this.menu_icon = menu_icon;
+    }
 
     public int getId() {
         return id;
@@ -28,12 +58,12 @@ public class Sys_Menu {
         this.id = id;
     }
 
-    public String getMenu_addr() {
-        return menu_addr;
+    public String getMenu_path() {
+        return menu_path;
     }
 
-    public void setMenu_addr(String menu_addr) {
-        this.menu_addr = menu_addr;
+    public void setMenu_path(String menu_path) {
+        this.menu_path = menu_path;
     }
 
     public String getMenu_title() {
@@ -44,12 +74,28 @@ public class Sys_Menu {
         this.menu_title = menu_title;
     }
 
-    public String getMenu_intro() {
-        return menu_intro;
+    public String getMenu_name() {
+        return menu_name;
     }
 
-    public void setMenu_intro(String menu_intro) {
-        this.menu_intro = menu_intro;
+    public void setMenu_name(String menu_name) {
+        this.menu_name = menu_name;
+    }
+
+    public String getMenu_father() {
+        return menu_father;
+    }
+
+    public void setMenu_father(String menu_father) {
+        this.menu_father = menu_father;
+    }
+
+    public int getIs_menu() {
+        return is_menu;
+    }
+
+    public void setIs_menu(int is_menu) {
+        this.is_menu = is_menu;
     }
 
     public BigInteger getMenu_create_time() {

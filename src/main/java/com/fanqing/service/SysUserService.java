@@ -1,23 +1,25 @@
 package com.fanqing.service;
 
-import javax.servlet.http.HttpServletRequest;
+import com.alibaba.fastjson.JSONObject;
 
 public interface SysUserService {
 
-    String userLogin(HttpServletRequest request);
+    String userLogin(JSONObject jsonObject);
 
-    String getUserInfo(HttpServletRequest request);
+    String getUserInfo(JSONObject jsonObject);
 
-    String createUser(HttpServletRequest request);
+    String createUser(JSONObject jsonObject);
 
-    String updateUser(HttpServletRequest request);
+    String updateUser(JSONObject jsonObject);
 
-    String getUserList(HttpServletRequest request);
+    String getUserList(JSONObject jsonObject);
 
-    String getRoleList(HttpServletRequest request);
+    String getRoleList(JSONObject jsonObject);
 
-    String createRole(HttpServletRequest request);
+    String createRole(JSONObject jsonObject);
 
-    String updateRole(HttpServletRequest request);
+    String updateRole(JSONObject jsonObject);
+
+    String getOperationLogList(JSONObject jsonObject);
 
 }

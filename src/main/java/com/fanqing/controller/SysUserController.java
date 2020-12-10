@@ -1,12 +1,13 @@
 package com.fanqing.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fanqing.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
@@ -17,93 +18,105 @@ public class SysUserController {
     private SysUserService sysUserService;
 
     @RequestMapping(value = "/userLogin", method = RequestMethod.POST)
-    public String userLogin(HttpServletRequest request, HttpServletResponse response) {
+    public String userLogin(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.userLogin(request);
+        return sysUserService.userLogin(jsonObject);
     }
     @RequestMapping(value = "/getUserInfo", method = RequestMethod.POST)
-    public String getUserInfo(HttpServletRequest request, HttpServletResponse response) {
+    public String getUserInfo(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.getUserInfo(request);
+        return sysUserService.getUserInfo(jsonObject);
     }
 
     @RequestMapping(value = "/getUserList", method = RequestMethod.POST)
-    public String getUserList(HttpServletRequest request, HttpServletResponse response) {
+    public String getUserList(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.getUserList(request);
+        return sysUserService.getUserList(jsonObject);
     }
 
     @RequestMapping(value = "/createUser", method = RequestMethod.POST)
-    public String createUser(HttpServletRequest request, HttpServletResponse response) {
+    public String createUser(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.createUser(request);
+        return sysUserService.createUser(jsonObject);
     }
 
     @RequestMapping(value = "/updateUser", method = RequestMethod.POST)
-    public String updateUser(HttpServletRequest request, HttpServletResponse response) {
+    public String updateUser(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.updateUser(request);
+        return sysUserService.updateUser(jsonObject);
     }
 
 
 
     @RequestMapping(value = "/getRoleList", method = RequestMethod.POST)
-    public String getRoleList(HttpServletRequest request, HttpServletResponse response) {
+    public String getRoleList(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.getRoleList(request);
+        return sysUserService.getRoleList(jsonObject);
     }
 
     @RequestMapping(value = "/createRole", method = RequestMethod.POST)
-    public String createRole(HttpServletRequest request, HttpServletResponse response) {
+    public String createRole(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.createRole(request);
+        return sysUserService.createRole(jsonObject);
     }
 
     @RequestMapping(value = "/updateRole", method = RequestMethod.POST)
-    public String updateRole(HttpServletRequest request, HttpServletResponse response) {
+    public String updateRole(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return sysUserService.updateRole(request);
+        return sysUserService.updateRole(jsonObject);
     }
+
+    @RequestMapping(value = "/getOperationLogList", method = RequestMethod.POST)
+    public String getOperationLogList(@RequestBody JSONObject jsonObject, HttpServletResponse response) {
+
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
+        response.setHeader("Access-Control-Max-Age", "3600");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+        return sysUserService.getOperationLogList(jsonObject);
+    }
+
 
 
 
