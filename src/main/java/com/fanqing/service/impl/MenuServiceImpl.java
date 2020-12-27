@@ -1,7 +1,6 @@
 package com.fanqing.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fanqing.bean.Sys_Account;
 import com.fanqing.bean.Sys_Menu;
 import com.fanqing.dao.SysMenuRepository;
 import com.fanqing.service.MenuService;
@@ -10,10 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +23,7 @@ public class MenuServiceImpl implements MenuService {
     private static final Logger logger = LoggerFactory.getLogger(MenuServiceImpl.class);
 
     @Override
-    public String getMenuList(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String getMenuList(JSONObject jsonObject1, String token) {
         String delete_state = jsonObject1.getString("delete_state");
         try {
             if (token != null && !"".equals(token)) {
@@ -41,7 +36,7 @@ public class MenuServiceImpl implements MenuService {
                 if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
                     List<Sys_Menu> menuList = new ArrayList<>();
                     if (delete_state != null && !"".equals(delete_state)) {
@@ -77,10 +72,10 @@ public class MenuServiceImpl implements MenuService {
                     }
 
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();

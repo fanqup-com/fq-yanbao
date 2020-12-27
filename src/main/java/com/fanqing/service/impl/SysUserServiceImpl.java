@@ -2,20 +2,23 @@ package com.fanqing.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fanqing.bean.*;
-import com.fanqing.dao.SysAccountRepository;
-import com.fanqing.dao.SysMenuRepository;
-import com.fanqing.dao.SysOperationLogRepository;
-import com.fanqing.dao.SysRoleRepository;
+import com.fanqing.dao.*;
 import com.fanqing.service.SysUserService;
 import com.fanqing.util.Base64Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -34,6 +37,8 @@ public class SysUserServiceImpl implements SysUserService {
     private SysOperationLogRepository sysOperationLogRepository;
     @Autowired
     private SysMenuRepository sysMenuRepository;
+    @Autowired
+    private SysStoreRepository sysStoreRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(SysUserServiceImpl.class);
 
@@ -70,8 +75,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String getUserInfo(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String getUserInfo(JSONObject jsonObject1, String token) {
         try {
             if (token != null && !"".equals(token)) {
                 token = Base64Util.decoderBASE64(token);
@@ -83,7 +87,7 @@ public class SysUserServiceImpl implements SysUserService {
                 if (user_name != null && !"".equals(user_name) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
                     Sys_Account account = sysAccountRepository.getByUserName(user_name.toString());
                     if (account != null) {
@@ -96,10 +100,10 @@ public class SysUserServiceImpl implements SysUserService {
                             menuSb.append("\"menu_path\":\"" + menu.getMenu_path() + "\",");
                             menuSb.append("\"menu_name\":\"" + menu.getMenu_name() + "\",");
                             menuSb.append("\"route_name\":\"" + menu.getMenu_route_name() + "\",");
-                            menuSb.append("\"meta\":{\"title\":\""+menu.getMenu_title()+"\",\"icon\":\""+menu.getMenu_icon()+"\"},");
-                            menuSb.append("\"isMenu\":\""+menu.getIs_menu()+"\",");
-                            menuSb.append("\"hasChild\":\""+menu.getHas_child()+"\",");
-                            menuSb.append("\"father\":\""+menu.getMenu_father()+"\"");
+                            menuSb.append("\"meta\":{\"title\":\"" + menu.getMenu_title() + "\",\"icon\":\"" + menu.getMenu_icon() + "\"},");
+                            menuSb.append("\"isMenu\":\"" + menu.getIs_menu() + "\",");
+                            menuSb.append("\"hasChild\":\"" + menu.getHas_child() + "\",");
+                            menuSb.append("\"father\":\"" + menu.getMenu_father() + "\"");
                             menuSb.append("},");
                         }
                         if (menuSb.toString().contains("path")) {
@@ -111,6 +115,9 @@ public class SysUserServiceImpl implements SysUserService {
                                 "\"user_name\":\"" + user_name + "\"," +
                                 "\"role_name\":\"" + sysRole.getRole_name() + "\"," +
                                 "\"tel\":\"" + account.getTel() + "\"," +
+                                "\"name\":\"" + account.getName() + "\"," +
+                                "\"email\":\"" + account.getEmail() + "\"," +
+                                "\"is_employee\":\"" + account.getIs_employee() + "\"," +
                                 "\"remark\":\"" + account.getRemark() + "\"," +
                                 "\"store_id\":\"" + account.getStore_id() + "\"," +
                                 "\"role_permission\":" + menuSb.toString() + "" +
@@ -119,10 +126,10 @@ public class SysUserServiceImpl implements SysUserService {
                         return "{\"code\": 201,\"msg\": \"用户不存在\"}";
                     }
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -132,19 +139,21 @@ public class SysUserServiceImpl implements SysUserService {
 
 
     @Override
-    public String createUser(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String createUser(JSONObject jsonObject1, String token) {
         String user_name = jsonObject1.getString("user_name");
         String password = jsonObject1.getString("password");
+        String name = jsonObject1.getString("name");
+        String is_employee = jsonObject1.getString("is_employee");
         String tel = jsonObject1.getString("tel");
+        String email = jsonObject1.getString("email");
         String remark = jsonObject1.getString("remark");
         String store_id = jsonObject1.getString("store_id");
         String role_id = jsonObject1.getString("role_id");
         try {
             if (token != null && !"".equals(token)) {
                 token = Base64Util.decoderBASE64(token);
-                logger.info("创建新用户,token：" + token + ",user_name：" + user_name + ",password：" + password +
-                        ",tel：" + tel + ",remark：" + remark + ",store_id：" + store_id + ",role_id：" + role_id);
+                logger.info("创建新用户,token：" + token + ",user_name：" + user_name + ",password：" + password + ",name：" + name + ",is_employee：" + is_employee +
+                        ",tel：" + tel + ",email：" + email + ",remark：" + remark + ",store_id：" + store_id + ",role_id：" + role_id);
                 JSONObject jsonObject;
                 jsonObject = JSONObject.parseObject(token);
                 Object creator = jsonObject.get("user_name");
@@ -152,15 +161,15 @@ public class SysUserServiceImpl implements SysUserService {
                 if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    if (StringUtils.isEmpty(user_name)){
+                    if (StringUtils.isEmpty(user_name)) {
                         return "{\"code\": 201,\"msg\": \"用户名不允许为空\"}";
-                    }else if (StringUtils.isEmpty(password)){
+                    } else if (StringUtils.isEmpty(password)) {
                         return "{\"code\": 201,\"msg\": \"密码不允许为空\"}";
-                    }else if (StringUtils.isEmpty(store_id)){
+                    } else if (StringUtils.isEmpty(store_id)) {
                         return "{\"code\": 201,\"msg\": \"门店id不允许为空\"}";
-                    }else if (StringUtils.isEmpty(role_id)){
+                    } else if (StringUtils.isEmpty(role_id)) {
                         return "{\"code\": 201,\"msg\": \"角色id不允许为空\"}";
                     }
 
@@ -170,6 +179,9 @@ public class SysUserServiceImpl implements SysUserService {
                     account.setPassword(password);
                     account.setPassword_md5(password_md5);
                     account.setTel(tel);
+                    account.setName(name);
+                    account.setIs_employee(Integer.parseInt(is_employee));
+                    account.setEmail(email);
                     account.setRemark(remark);
                     account.setCreator(creator.toString());
                     account.setStore_id(Integer.parseInt(store_id));
@@ -177,14 +189,14 @@ public class SysUserServiceImpl implements SysUserService {
                     account.setCreate_time(BigInteger.valueOf(System.currentTimeMillis()));
                     account.setDelete_state(0);
                     sysAccountRepository.save(account);
-                    saveLog(creator.toString(),"创建用户" + user_name);
-                    return "{\"code\": 200,\"msg\": \"用户"+user_name+"创建成功\"}";
+                    saveLog(creator.toString(), "创建用户" + user_name);
+                    return "{\"code\": 200,\"msg\": \"用户" + user_name + "创建成功\"}";
 
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -193,11 +205,13 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String updateUser(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String updateUser(JSONObject jsonObject1, String token) {
         String user_name = jsonObject1.getString("user_name");
         String password = jsonObject1.getString("password");
         String tel = jsonObject1.getString("tel");
+        String name = jsonObject1.getString("name");
+        String email = jsonObject1.getString("email");
+        String is_employee = jsonObject1.getString("is_employee");
         String remark = jsonObject1.getString("remark");
         String store_id = jsonObject1.getString("store_id");
         String role_id = jsonObject1.getString("role_id");
@@ -214,45 +228,54 @@ public class SysUserServiceImpl implements SysUserService {
                 if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    if (StringUtils.isEmpty(user_name)){
-                        return "{\"code\": 201,\"msg\": \"用户名不允许为空\"}";
+                    if (StringUtils.isEmpty(user_name)) {
+                        return "{\"code\": 202,\"msg\": \"用户名不允许为空\"}";
                     }
                     Sys_Account account = sysAccountRepository.getByUserName(user_name);
-                    if (account != null){
-                        if (!StringUtils.isEmpty(password)){
+                    if (account != null) {
+                        if (!StringUtils.isEmpty(password)) {
                             String password_md5 = DigestUtils.md5DigestAsHex(password.getBytes()).toLowerCase();
                             account.setPassword_md5(password_md5);
                             account.setPassword(password);
                         }
-                        if (!StringUtils.isEmpty(tel)){
+                        if (!StringUtils.isEmpty(tel)) {
                             account.setTel(tel);
                         }
-                        if (!StringUtils.isEmpty(remark)){
+                        if (!StringUtils.isEmpty(remark)) {
                             account.setRemark(remark);
                         }
-                        if (!StringUtils.isEmpty(store_id)){
+                        if (!StringUtils.isEmpty(store_id)) {
                             account.setStore_id(Integer.parseInt(store_id));
                         }
-                        if (!StringUtils.isEmpty(role_id)){
+                        if (!StringUtils.isEmpty(role_id)) {
                             account.setRole_id(Integer.parseInt(role_id));
                         }
-                        if (!StringUtils.isEmpty(delete_state)){
+                        if (!StringUtils.isEmpty(delete_state)) {
                             account.setDelete_state(Integer.parseInt(delete_state));
                         }
+                        if (!StringUtils.isEmpty(name)) {
+                            account.setName(name);
+                        }
+                        if (!StringUtils.isEmpty(email)) {
+                            account.setEmail(email);
+                        }
+                        if (!StringUtils.isEmpty(is_employee)) {
+                            account.setIs_employee(Integer.parseInt(is_employee));
+                        }
                         sysAccountRepository.save(account);
-                        saveLog(creator.toString(),"修改用户" + user_name + "信息");
-                        return "{\"code\": 200,\"msg\": \"用户【"+user_name+"】信息修改成功\"}";
+                        saveLog(creator.toString(), "修改用户" + user_name + "信息");
+                        return "{\"code\": 200,\"msg\": \"用户【" + user_name + "】信息修改成功\"}";
 
-                    }else {
-                        return "{\"code\": 201,\"msg\": \"用户【"+user_name+"】不存在\"}";
+                    } else {
+                        return "{\"code\": 201,\"msg\": \"用户【" + user_name + "】不存在\"}";
                     }
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -261,12 +284,22 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String getUserList(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String getUserList(JSONObject jsonObject1, String token) {
+        String page = jsonObject1.getString("page");
+        String size = jsonObject1.getString("size");
+        String account_user_name = jsonObject1.getString("user_name");
+        String name = jsonObject1.getString("name");
+        String is_employee = jsonObject1.getString("is_employee");
+        String store_id = jsonObject1.getString("store_id");
+        String role_id = jsonObject1.getString("role_id");
+        String start_time = jsonObject1.getString("start_time");
+        String end_time = jsonObject1.getString("end_time");
+        String delete_state = jsonObject1.getString("delete_state");
         try {
             if (token != null && !"".equals(token)) {
                 token = Base64Util.decoderBASE64(token);
-                logger.info("获取用户列表,token：" + token);
+                logger.info("获取用户列表,token：" + token + ",user_name：" + account_user_name + ",name：" + name + ",is_employee：" + is_employee +
+                        ",store_id：" + store_id + ",role_id：" + role_id + ",start_time：" + start_time + ",end_time：" + end_time + ",delete_state：" + delete_state);
                 JSONObject jsonObject;
                 jsonObject = JSONObject.parseObject(token);
                 Object user_name = jsonObject.get("user_name");
@@ -274,11 +307,34 @@ public class SysUserServiceImpl implements SysUserService {
                 if (user_name != null && !"".equals(user_name) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    List<Sys_Account> accountList = sysAccountRepository.findAll();
+                    Sort sort = new Sort(Sort.Direction.DESC,"id");
+                    int int_page = 0;
+                    int int_size = 10000;
+                    if (page != null && !"".equals(page)){
+                        int_page = Integer.parseInt(page) - 1;
+                        if (int_page < 0){
+                            int_page = 0;
+                        }
+                    }
+                    if (size != null && !"".equals(size)){
+                        int_size = Integer.parseInt(size);
+                        if (int_size < 0){
+                            int_size = 10000;
+                        }
+                    }
+                    if (start_time == null || "".equals(start_time)){
+                        start_time = "1577808000000";
+                    }
+                    if (end_time == null || "".equals(end_time)){
+                        end_time = "4102416000000";
+                    }
+                    Pageable pageable = new PageRequest(int_page,int_size,sort);
+                    Page<Sys_Account> accountList = sysAccountRepository.findPage(account_user_name, name, is_employee, store_id, role_id, delete_state, new BigInteger(start_time), new BigInteger(end_time),pageable);
+
                     StringBuilder sb = new StringBuilder("");
-                    if (accountList.size() > 0) {
+                    if (accountList.getContent().size() > 0) {
                         for (Sys_Account account : accountList) {
                             Sys_Role sysRole = sysRoleRepository.getOne(account.getRole_id());
 
@@ -287,6 +343,9 @@ public class SysUserServiceImpl implements SysUserService {
                                     "\"user_name\":\"" + account.getUser_name() + "\"," +
                                     "\"role_name\":\"" + sysRole.getRole_name() + "\"," +
                                     "\"tel\":\"" + account.getTel() + "\"," +
+                                    "\"name\":\"" + account.getName() + "\"," +
+                                    "\"is_employee\":\"" + account.getIs_employee() + "\"," +
+                                    "\"email\":\"" + account.getEmail() + "\"," +
                                     "\"remark\":\"" + account.getRemark() + "\"," +
                                     "\"delete_state\":\"" + account.getDelete_state() + "\"," +
                                     "\"create_time\":\"" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(account.getCreate_time()) + "\"," +
@@ -297,12 +356,13 @@ public class SysUserServiceImpl implements SysUserService {
                     if (sb.toString().contains("user_name")) {
                         sb.deleteCharAt(sb.length() - 1);
                     }
-                    return "{\"code\": 200,\"msg\":\"success\",\"data\":[" + sb + "]}";
+                    return "{\"code\": 200,\"msg\":\"success\",\"data\": {\"totalElements\":\"" + accountList.getTotalElements() + "\"," +
+                            "\"totalPages\":\"" + accountList.getTotalPages() + "\",\"content\":[" + sb + "]}}";
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -311,13 +371,20 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String getRoleList(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
-        String delete_state =jsonObject1.getString("delete_state");
+    public String getRoleList(JSONObject jsonObject1, String token) {
+        String page = jsonObject1.getString("page");
+        String size = jsonObject1.getString("size");
+        String start_time = jsonObject1.getString("start_time");
+        String end_time = jsonObject1.getString("end_time");
+        String role_code = jsonObject1.getString("role_code");
+        String role_name = jsonObject1.getString("role_name");
+        String creator = jsonObject1.getString("creator");
+        String delete_state = jsonObject1.getString("delete_state");
         try {
             if (token != null && !"".equals(token)) {
                 token = Base64Util.decoderBASE64(token);
-                logger.info("获取角色列表,token：" + token + ",delete_state：" + delete_state);
+                logger.info("获取角色列表,token：" + token + ",start_time：" + start_time + ",end_time：" + end_time + ",role_code：" + role_code +
+                        ",role_name：" + role_name + ",creator：" + creator + ",delete_state：" + delete_state + ",page：" + page + ",size：" + size);
                 JSONObject jsonObject;
                 jsonObject = JSONObject.parseObject(token);
                 Object user_name = jsonObject.get("user_name");
@@ -325,16 +392,34 @@ public class SysUserServiceImpl implements SysUserService {
                 if (user_name != null && !"".equals(user_name) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    List<Sys_Role> roleList = new ArrayList<>();
-                    if (delete_state != null && !"".equals(delete_state)) {
-                        roleList = sysRoleRepository.getByDeletState(Integer.parseInt(delete_state));
-                    } else {
-                        roleList = sysRoleRepository.getAllRole();
+                    Sort sort = new Sort(Sort.Direction.DESC,"id");
+                    int int_page = 0;
+                    int int_size = 10000;
+                    if (page != null && !"".equals(page)){
+                        int_page = Integer.parseInt(page) - 1;
+                        if (int_page < 0){
+                            int_page = 0;
+                        }
                     }
+                    if (size != null && !"".equals(size)){
+                        int_size = Integer.parseInt(size);
+                        if (int_size < 0){
+                            int_size = 10000;
+                        }
+                    }
+                    if (start_time == null || "".equals(start_time)){
+                        start_time = "1577808000000";
+                    }
+                    if (end_time == null || "".equals(end_time)){
+                        end_time = "4102416000000";
+                    }
+
+                    Pageable pageable = new PageRequest(int_page,int_size,sort);
+                    Page<Sys_Role> roleList = sysRoleRepository.findPage(role_code, role_name, creator, new BigInteger(start_time), new BigInteger(end_time),delete_state,pageable);
                     StringBuilder sb = new StringBuilder("");
-                    if (roleList.size() > 0) {
+                    if (roleList.getContent().size() > 0) {
                         for (Sys_Role role : roleList) {
                             sb.append("{" +
                                     "\"id\":\"" + role.getId() + "\"," +
@@ -350,12 +435,13 @@ public class SysUserServiceImpl implements SysUserService {
                             sb = sb.deleteCharAt(sb.length() - 1);
                         }
                     }
-                    return "{\"code\": 200,\"msg\":\"success\",\"data\": [" + sb + "]}";
+                    return "{\"code\": 200,\"msg\":\"success\",\"data\": {\"totalElements\":\"" + roleList.getTotalElements() + "\"," +
+                            "\"totalPages\":\"" + roleList.getTotalPages() + "\",\"content\":[" + sb + "]}}";
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -364,8 +450,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String createRole(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String createRole(JSONObject jsonObject1, String token) {
         String role_code = jsonObject1.getString("role_code");
         String role_name = jsonObject1.getString("role_name");
         String role_intro = jsonObject1.getString("role_code");
@@ -382,13 +467,13 @@ public class SysUserServiceImpl implements SysUserService {
                 if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    if (StringUtils.isEmpty(role_code)){
+                    if (StringUtils.isEmpty(role_code)) {
                         return "{\"code\": 201,\"msg\": \"角色code不允许为空\"}";
-                    }else if (StringUtils.isEmpty(role_name)){
+                    } else if (StringUtils.isEmpty(role_name)) {
                         return "{\"code\": 201,\"msg\": \"角色名称不允许为空\"}";
-                    }else if (StringUtils.isEmpty(role_permission)){
+                    } else if (StringUtils.isEmpty(role_permission)) {
                         return "{\"code\": 201,\"msg\": \"角色权限不允许为空\"}";
                     }
 
@@ -401,13 +486,13 @@ public class SysUserServiceImpl implements SysUserService {
                     role.setCreate_time(BigInteger.valueOf(System.currentTimeMillis()));
                     role.setDelete_state(0);
                     sysRoleRepository.save(role);
-                    saveLog(creator.toString(),"创建角色" + role_name);
-                    return "{\"code\": 200,\"msg\": \"角色"+role_name+"创建成功\"}";
+                    saveLog(creator.toString(), "创建角色" + role_name);
+                    return "{\"code\": 200,\"msg\": \"角色" + role_name + "创建成功\"}";
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -416,8 +501,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String updateRole(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String updateRole(JSONObject jsonObject1, String token) {
         String role_id = jsonObject1.getString("role_id");
         String role_code = jsonObject1.getString("role_code");
         String role_name = jsonObject1.getString("role_name");
@@ -436,41 +520,41 @@ public class SysUserServiceImpl implements SysUserService {
                 if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    if (StringUtils.isEmpty(role_id)){
-                        return "{\"code\": 201,\"msg\": \"角色id不允许为空\"}";
+                    if (StringUtils.isEmpty(role_id)) {
+                        return "{\"code\": 202,\"msg\": \"角色id不允许为空\"}";
                     }
                     Sys_Role role = sysRoleRepository.getOne(Integer.valueOf(role_id));
-                    if (role != null){
-                        if (!StringUtils.isEmpty(role_code)){
+                    if (role != null) {
+                        if (!StringUtils.isEmpty(role_code)) {
                             role.setRole_code(role_code);
                         }
-                        if (!StringUtils.isEmpty(role_name)){
+                        if (!StringUtils.isEmpty(role_name)) {
                             role.setRole_name(role_name);
                         }
-                        if (!StringUtils.isEmpty(role_intro)){
+                        if (!StringUtils.isEmpty(role_intro)) {
                             role.setRole_intro(role_intro);
                         }
-                        if (!StringUtils.isEmpty(role_permission)){
+                        if (!StringUtils.isEmpty(role_permission)) {
                             role.setRole_permission(role_permission);
                         }
 
-                        if (!StringUtils.isEmpty(delete_state)){
+                        if (!StringUtils.isEmpty(delete_state)) {
                             role.setDelete_state(Integer.parseInt(delete_state));
                         }
                         sysRoleRepository.save(role);
-                        saveLog(creator.toString(),"修改角色" + role_id + "信息");
-                        return "{\"code\": 200,\"msg\": \"角色【"+role_id+"】信息修改成功\"}";
+                        saveLog(creator.toString(), "修改角色" + role_id + "信息");
+                        return "{\"code\": 200,\"msg\": \"角色【" + role_id + "】信息修改成功\"}";
 
-                    }else {
-                        return "{\"code\": 201,\"msg\": \"角色【"+role_id+"】不存在\"}";
+                    } else {
+                        return "{\"code\": 201,\"msg\": \"角色【" + role_id + "】不存在\"}";
                     }
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -479,8 +563,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public String getOperationLogList(JSONObject jsonObject1) {
-        String token = jsonObject1.getString("token");
+    public String getOperationLogList(JSONObject jsonObject1, String token) {
         String user_name = jsonObject1.getString("user_name");
         String start_time = jsonObject1.getString("start_time");
         String end_time = jsonObject1.getString("end_time");
@@ -498,33 +581,34 @@ public class SysUserServiceImpl implements SysUserService {
                 if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
                     long currentTime = Long.parseLong(limit_time.toString());
                     if (System.currentTimeMillis() > currentTime) {
-                        return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                     }
-                    if (StringUtils.isEmpty(size)){
-                        size = "10";
+                    Sort sort = new Sort(Sort.Direction.DESC,"id");
+                    int int_page = 0;
+                    int int_size = 10000;
+                    if (page != null && !"".equals(page)){
+                        int_page = Integer.parseInt(page) - 1;
+                        if (int_page < 0){
+                            int_page = 0;
+                        }
                     }
-                    if (StringUtils.isEmpty(page)){
-                        page = "1";
+                    if (size != null && !"".equals(size)){
+                        int_size = Integer.parseInt(size);
+                        if (int_size < 0){
+                            int_size = 10000;
+                        }
                     }
-                    BigInteger start_time_long = null;
-                    BigInteger end_time_long = null;
-                    if (!StringUtils.isEmpty(start_time)){
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date d = sdf.parse(start_time);
-                        start_time_long = new BigInteger(String.valueOf(d.getTime()));
+                    if (start_time == null || "".equals(start_time)){
+                        start_time = "1577808000000";
                     }
-                    if (!StringUtils.isEmpty(end_time)){
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        Date d = sdf.parse(end_time);
-                        end_time_long = new BigInteger(String.valueOf(d.getTime()));
+                    if (end_time == null || "".equals(end_time)){
+                        end_time = "4102416000000";
                     }
-                    int page_int = Integer.parseInt(page) - 1;
-                    int size_int = Integer.parseInt(size);
 
-
-                    List<Sys_Operation_Log> operationLogList = sysOperationLogRepository.queryList(user_name,start_time_long,end_time_long,page_int*size_int,size_int);
-                    if (operationLogList.size() > 0){
-                        StringBuilder operationLogSb = new StringBuilder("[");
+                    Pageable pageable = new PageRequest(int_page,int_size,sort);
+                    Page<Sys_Operation_Log> operationLogList = sysOperationLogRepository.findPage(user_name, new BigInteger(start_time), new BigInteger(end_time), pageable);
+                    if (operationLogList.getContent().size() > 0) {
+                        StringBuilder operationLogSb = new StringBuilder("");
                         for (Sys_Operation_Log operationLog : operationLogList) {
                             operationLogSb.append("{");
                             operationLogSb.append("\"id\":\"" + operationLog.getId() + "\",");
@@ -536,16 +620,270 @@ public class SysUserServiceImpl implements SysUserService {
                         if (operationLogSb.toString().contains("user_name")) {
                             operationLogSb = operationLogSb.deleteCharAt(operationLogSb.length() - 1);
                         }
-                        operationLogSb.append("]");
-                        return "{\"code\": 200,\"msg\":\"success\",\"data\":" + operationLogSb + "}";
-                    }else {
+                        return "{\"code\": 200,\"msg\":\"success\",\"data\": {\"totalElements\":\"" + operationLogList.getTotalElements() + "\"," +
+                                "\"totalPages\":\"" + operationLogList.getTotalPages() + "\",\"content\":[" + operationLogSb + "]}}";
+                    } else {
                         return "{\"code\": 200,\"msg\":\"success\",\"data\": []}";
                     }
                 } else {
-                    return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
                 }
             } else {
-                return "{\"code\": 201,\"msg\": \"登录失效,请重新登录\"}";
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"code\": 201,\"msg\": \"系统异常\"}";
+        }
+    }
+
+    @Override
+    public String getStoreList(JSONObject jsonObject1, String token) {
+        String store_name = jsonObject1.getString("store_name");
+        String store_province = jsonObject1.getString("store_province");
+        String store_city = jsonObject1.getString("store_city");
+        String store_code = jsonObject1.getString("store_code");
+        String start_time = jsonObject1.getString("start_time");
+        String end_time = jsonObject1.getString("end_time");
+        String delete_state = jsonObject1.getString("delete_state");
+        String page = jsonObject1.getString("page");
+        String size = jsonObject1.getString("size");
+        try {
+            if (token != null && !"".equals(token)) {
+                token = Base64Util.decoderBASE64(token);
+                logger.info("获取门店列表,token：" + token + ",store_name：" + store_name + ",store_province：" + store_province + ",store_city：" + store_city +
+                        ",store_code：" + store_code + ",start_time：" + start_time + ",end_time：" + end_time + ",delete_state：" + delete_state);
+                JSONObject jsonObject;
+                jsonObject = JSONObject.parseObject(token);
+                Object user_name = jsonObject.get("user_name");
+                Object limit_time = jsonObject.get("limit_time");
+                if (user_name != null && !"".equals(user_name) && limit_time != null && !"".equals(limit_time)) {
+                    long currentTime = Long.parseLong(limit_time.toString());
+                    if (System.currentTimeMillis() > currentTime) {
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+                    }
+                    Sort sort = new Sort(Sort.Direction.DESC,"id");
+                    int int_page = 0;
+                    int int_size = 10000;
+                    if (page != null && !"".equals(page)){
+                        int_page = Integer.parseInt(page) - 1;
+                        if (int_page < 0){
+                            int_page = 0;
+                        }
+                    }
+                    if (size != null && !"".equals(size)){
+                        int_size = Integer.parseInt(size);
+                        if (int_size < 0){
+                            int_size = 10000;
+                        }
+                    }
+                    if (start_time == null || "".equals(start_time)){
+                        start_time = "1577808000000";
+                    }
+                    if (end_time == null || "".equals(end_time)){
+                        end_time = "4102416000000";
+                    }
+
+                    Pageable pageable = new PageRequest(int_page,int_size,sort);
+                    Page<Sys_Store> storeList = sysStoreRepository.findPage(store_name,store_province,store_city,store_code,new BigInteger(start_time),new BigInteger(end_time),delete_state,pageable);
+                    StringBuilder sb = new StringBuilder("");
+                    if (storeList.getContent().size() > 0) {
+                        for (Sys_Store store : storeList) {
+                            sb.append("{" +
+                                    "\"id\":\"" + store.getId() + "\"," +
+                                    "\"store_name\":\"" + store.getStore_name() + "\"," +
+                                    "\"store_code\":\"" + store.getStore_code() + "\"," +
+                                    "\"store_province\":\"" + store.getStore_province() + "\"," +
+                                    "\"store_city\":\"" + store.getStore_city() + "\"," +
+                                    "\"store_manager\":\"" + store.getStore_manager() + "\"," +
+                                    "\"store_address\":\"" + store.getStore_address() + "\"," +
+                                    "\"store_service\":\"" + store.getStore_service() + "\"," +
+                                    "\"store_carbrand\":\"" + store.getStore_carbrand() + "\"," +
+                                    "\"store_years\":\"" + store.getStore_years() + "\"," +
+                                    "\"store_intro\":\"" + store.getStore_intro() + "\"," +
+                                    "\"authorized_repairer\":\"" + store.getAuthorized_repairer() + "\"," +
+                                    "\"store_tel\":\"" + store.getStore_tel() + "\"," +
+                                    "\"store_create_time\":\"" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(store.getStore_create_time()) + "\"," +
+                                    "\"store_update_time\":\"" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(store.getStore_update_time()) + "\"," +
+                                    "\"delete_state\":\"" + store.getDelete_state() + "\"},");
+                        }
+                        if (sb.toString().contains("store_code")) {
+                            sb = sb.deleteCharAt(sb.length() - 1);
+                        }
+                    }
+                    return "{\"code\": 200,\"msg\":\"success\",\"data\": {\"totalElements\":\"" + storeList.getTotalElements() + "\"," +
+                            "\"totalPages\":\"" + storeList.getTotalPages() + "\",\"content\":[" + sb + "]}}";
+                } else {
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+                }
+            } else {
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"code\": 201,\"msg\": \"系统异常\"}";
+        }
+    }
+
+    @Override
+    public String createStore(JSONObject jsonObject1, String token) {
+        String store_name = jsonObject1.getString("store_name");
+        String store_code = jsonObject1.getString("store_code");
+        String store_province = jsonObject1.getString("store_province");
+        String store_city = jsonObject1.getString("store_city");
+        String store_manager = jsonObject1.getString("store_manager");
+        String store_address = jsonObject1.getString("store_address");
+        String store_service = jsonObject1.getString("store_service");
+        String store_carbrand = jsonObject1.getString("store_carbrand");
+        String store_years = jsonObject1.getString("store_years");
+        String store_intro = jsonObject1.getString("store_intro");
+        String authorized_repairer = jsonObject1.getString("authorized_repairer");
+        String store_tel = jsonObject1.getString("store_tel");
+        try {
+            if (token != null && !"".equals(token)) {
+                token = Base64Util.decoderBASE64(token);
+                logger.info("创建新门店,token：" + token + ",store_name：" + store_name + ",store_code：" + store_code + ",store_province：" + store_province +
+                        ",store_city：" + store_city + ",store_manager：" + store_manager + ",store_address：" + store_address + ",store_service：" + store_service +
+                        ",store_carbrand：" + store_carbrand + ",store_years：" + store_years + ",store_intro：" + store_intro + ",authorized_repairer：" + authorized_repairer +
+                        ",store_tel：" + store_tel);
+                JSONObject jsonObject;
+                jsonObject = JSONObject.parseObject(token);
+                Object creator = jsonObject.get("user_name");
+                Object limit_time = jsonObject.get("limit_time");
+                if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
+                    long currentTime = Long.parseLong(limit_time.toString());
+                    if (System.currentTimeMillis() > currentTime) {
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+                    }
+                    if (StringUtils.isEmpty(store_code)) {
+                        return "{\"code\": 201,\"msg\": \"门店编码不允许为空\"}";
+                    }
+                    if (StringUtils.isEmpty(store_province)) {
+                        return "{\"code\": 201,\"msg\": \"门店所在省份不允许为空\"}";
+                    }
+                    if (StringUtils.isEmpty(store_city)) {
+                        return "{\"code\": 201,\"msg\": \"门店所在市不允许为空\"}";
+                    }
+
+                    Sys_Store store = new Sys_Store();
+                    store.setStore_name(store_name);
+                    store.setStore_code(store_code);
+                    store.setStore_province(store_province);
+                    store.setStore_city(store_city);
+                    store.setStore_manager(store_manager);
+                    store.setStore_address(store_address);
+                    store.setStore_service(store_service);
+                    store.setStore_carbrand(store_carbrand);
+                    store.setStore_years(store_years);
+                    store.setStore_intro(store_intro);
+                    store.setAuthorized_repairer(authorized_repairer);
+                    store.setStore_tel(store_tel);
+                    store.setStore_create_time(BigInteger.valueOf(System.currentTimeMillis()));
+                    store.setStore_update_time(BigInteger.valueOf(System.currentTimeMillis()));
+                    store.setDelete_state(0);
+                    sysStoreRepository.save(store);
+                    saveLog(creator.toString(), "创建新门店" + store_name);
+                    return "{\"code\": 200,\"msg\": \"门店" + store_name + "创建成功\"}";
+                } else {
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+                }
+            } else {
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "{\"code\": 201,\"msg\": \"系统异常\"}";
+        }
+    }
+
+    @Override
+    public String updateStore(JSONObject jsonObject1, String token) {
+        String store_id = jsonObject1.getString("store_id");
+        String store_name = jsonObject1.getString("store_name");
+        String store_code = jsonObject1.getString("store_code");
+        String store_province = jsonObject1.getString("store_province");
+        String store_city = jsonObject1.getString("store_city");
+        String store_manager = jsonObject1.getString("store_manager");
+        String store_address = jsonObject1.getString("store_address");
+        String store_service = jsonObject1.getString("store_service");
+        String store_carbrand = jsonObject1.getString("store_carbrand");
+        String store_years = jsonObject1.getString("store_years");
+        String store_intro = jsonObject1.getString("store_intro");
+        String authorized_repairer = jsonObject1.getString("authorized_repairer");
+        String store_tel = jsonObject1.getString("store_tel");
+        String delete_state = jsonObject1.getString("delete_state");
+        try {
+            if (token != null && !"".equals(token)) {
+                token = Base64Util.decoderBASE64(token);
+                logger.info("修改门店信息,token：" + token + ",store_name：" + store_name + ",store_code：" + store_code + ",store_province：" + store_province +
+                        ",store_city：" + store_city + ",store_manager：" + store_manager + ",store_address：" + store_address + ",store_service：" + store_service +
+                        ",store_carbrand：" + store_carbrand + ",store_years：" + store_years + ",store_intro：" + store_intro + ",authorized_repairer：" + authorized_repairer +
+                        ",store_tel：" + store_tel + ",delete_state：" + delete_state);
+                JSONObject jsonObject;
+                jsonObject = JSONObject.parseObject(token);
+                Object creator = jsonObject.get("user_name");
+                Object limit_time = jsonObject.get("limit_time");
+                if (creator != null && !"".equals(creator) && limit_time != null && !"".equals(limit_time)) {
+                    long currentTime = Long.parseLong(limit_time.toString());
+                    if (System.currentTimeMillis() > currentTime) {
+                        return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+                    }
+                    if (StringUtils.isEmpty(store_id)) {
+                        return "{\"code\": 201,\"msg\": \"门店id不允许为空\"}";
+                    }
+                    Sys_Store store = sysStoreRepository.getOne(Integer.valueOf(store_id));
+                    if (store != null) {
+                        if (!StringUtils.isEmpty(store_name)) {
+                            store.setStore_name(store_name);
+                        }
+                        if (!StringUtils.isEmpty(store_code)) {
+                            store.setStore_code(store_code);
+                        }
+                        if (!StringUtils.isEmpty(store_province)) {
+                            store.setStore_province(store_province);
+                        }
+                        if (!StringUtils.isEmpty(store_city)) {
+                            store.setStore_city(store_city);
+                        }
+                        if (!StringUtils.isEmpty(store_manager)) {
+                            store.setStore_manager(store_manager);
+                        }
+                        if (!StringUtils.isEmpty(store_address)) {
+                            store.setStore_manager(store_address);
+                        }
+                        if (!StringUtils.isEmpty(store_service)) {
+                            store.setStore_service(store_service);
+                        }
+                        if (!StringUtils.isEmpty(store_carbrand)) {
+                            store.setStore_carbrand(store_carbrand);
+                        }
+                        if (!StringUtils.isEmpty(store_years)) {
+                            store.setStore_years(store_years);
+                        }
+                        if (!StringUtils.isEmpty(store_intro)) {
+                            store.setStore_intro(store_intro);
+                        }
+                        if (!StringUtils.isEmpty(authorized_repairer)) {
+                            store.setAuthorized_repairer(authorized_repairer);
+                        }
+                        if (!StringUtils.isEmpty(store_tel)) {
+                            store.setStore_tel(store_tel);
+                        }
+                        if (!StringUtils.isEmpty(delete_state)) {
+                            store.setDelete_state(Integer.parseInt(delete_state));
+                        }
+                        sysStoreRepository.save(store);
+                        saveLog(creator.toString(), "修改门店" + store_id + "信息");
+                        return "{\"code\": 200,\"msg\": \"门店【" + store_id + "】信息修改成功\"}";
+
+                    } else {
+                        return "{\"code\": 201,\"msg\": \"门店【" + store_id + "】不存在\"}";
+                    }
+                } else {
+                    return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
+                }
+            } else {
+                return "{\"code\": 202,\"msg\": \"登录失效,请重新登录\"}";
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -562,5 +900,6 @@ public class SysUserServiceImpl implements SysUserService {
         sysOperationLog.setOperation_info(operation_log);
         sysOperationLogRepository.save(sysOperationLog);
     }
+
 
 }

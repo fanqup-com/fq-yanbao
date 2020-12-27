@@ -1,26 +1,26 @@
 package com.fanqing.service;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.servlet.http.HttpServletRequest;
 
 public interface CardService {
 
-    String ShowCheCity(HttpServletRequest request);
+    String showCity(JSONObject jsonObject,String token);
 
-    String ShowCarSeriesList(HttpServletRequest request);
+    String showCarBrandList(JSONObject jsonObject,String token);
 
-    String ShowCarList(HttpServletRequest request);
+    String showCarSeriesList(JSONObject jsonObject,String token);
 
-    String GetUsedCarPrice(HttpServletRequest request);
+    String showCarList(JSONObject jsonObject,String token);
 
-    String GetProjectHtml(HttpServletRequest request);
+    String showStoreServiceList(JSONObject jsonObject,String token);
 
-    String GetInsurePlanHtml(HttpServletRequest request);
+    String GetExtendInsurePrice(JSONObject jsonObject,String token);
 
-    String GetExtendInsurePrice(HttpServletRequest request);
+    String uploadPhoto(JSONObject jsonObject1,String token);
 
-    String uploadPhoto(HttpServletRequest request);
-
-    String saveOrderInfo(HttpServletRequest request);
+    String saveOrderInfo(HttpServletRequest request,String token);
 
     String updateOrderInfo(HttpServletRequest request);
 

@@ -16,6 +16,9 @@ public class Sys_Account {
     private String user_name;
     private String password_md5;
     private String password;
+    private String name;
+    private int is_employee;
+    private String email;
     private String tel;
     private String remark;
     private int store_id;
@@ -110,5 +113,29 @@ public class Sys_Account {
 
     public void setStore_id(int store_id) {
         this.store_id = store_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getIs_employee() {
+        return is_employee;
+    }
+
+    public void setIs_employee(int is_employee) {
+        this.is_employee = is_employee;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

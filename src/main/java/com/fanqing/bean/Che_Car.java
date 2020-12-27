@@ -1,5 +1,6 @@
 package com.fanqing.bean;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -24,6 +25,7 @@ public class Che_Car {
     private String seat_number;
     private String update_time;
     private int series_id;
+    private int warranty_year;
 
 
     @Override
@@ -161,5 +163,13 @@ public class Che_Car {
 
     public void setSeries_id(int series_id) {
         this.series_id = series_id;
+    }
+
+    public int getWarranty_year() {
+        return warranty_year;
+    }
+
+    public void setWarranty_year(int warranty_year) {
+        this.warranty_year = warranty_year;
     }
 }

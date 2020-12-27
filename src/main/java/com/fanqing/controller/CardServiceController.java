@@ -1,10 +1,9 @@
 package com.fanqing.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.fanqing.service.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,136 +18,119 @@ public class CardServiceController {
     /*
      *@Author:xjy
      *@Description:获取城市级联信息
-     *@Date:2019/5/29_15:36
+     *@Date:2020/12/17_22:36
      */
-    @RequestMapping(value = "/ShowCheCity", method = RequestMethod.POST)
-    public String ShowCheCity(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/showCity", method = RequestMethod.POST)
+    public String ShowCheCity(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.ShowCheCity(request);
+        return cardService.showCity(jsonObject,token);
     }
 
     /*
      *@Author:xjy
-     *@Description:获取车列表
-     *@Date:2019/6/1_16:43
+     *@Description:获取车品牌列表
+     *@Date:2020/12/17_22:36
      */
-    @RequestMapping(value = "/ShowCarSeriesList", method = RequestMethod.POST)
-    public String ShowCarSeriesList(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/showCarBrandList", method = RequestMethod.POST)
+    public String showCarBrandList(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.ShowCarSeriesList(request);
+        return cardService.showCarBrandList(jsonObject,token);
     }
 
 
     /*
      *@Author:xjy
-     *@Description:查询车型
-     *@Date:2019/6/1_17:27
+     *@Description:获取车系列表
+     *@Date:2020/12/17_22:36
      */
-    @RequestMapping(value = "/ShowCarList", method = RequestMethod.POST)
-    public String ShowCarList(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/showCarSeriesList", method = RequestMethod.POST)
+    public String showCarSeriesList(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.ShowCarList(request);
+        return cardService.showCarSeriesList(jsonObject,token);
     }
 
     /*
      *@Author:xjy
-     *@Description:获取车辆基础估值
-     *@Date:2019/6/4_10:24
+     *@Description:获取车型列表
+     *@Date:2020/12/17_22:36
      */
-    @RequestMapping(value = "/GetUsedCarPrice", method = RequestMethod.POST)
-    public String GetUsedCarPrice(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/showCarList", method = RequestMethod.POST)
+    public String showCarList(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.GetUsedCarPrice(request);
+        return cardService.showCarList(jsonObject,token);
     }
-
     /*
      *@Author:xjy
-     *@Description:获取项目列表
-     *@Date:2019/6/4_11:37
+     *@Description:获取门店可售服务列表
+     *@Date:2020/12/17_22:36
      */
-    @RequestMapping(value = "/GetProjectHtml", method = RequestMethod.POST)
-    public String GetProjectHtml(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/showStoreServiceList", method = RequestMethod.POST)
+    public String showStoreServiceList(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.GetProjectHtml(request);
+        return cardService.showStoreServiceList(jsonObject,token);
     }
 
     /*
      *@Author:xjy
-     *@Description:获取投保计划
-     *@Date:2019/6/4_14:29
-     */
-    @RequestMapping(value = "/GetInsurePlanHtml", method = RequestMethod.POST)
-    public String GetInsurePlanHtml(HttpServletRequest request, HttpServletResponse response) {
-
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
-        return cardService.GetInsurePlanHtml(request);
-    }
-
-    /*
-     *@Author:xjy
-     *@Description:获取延保价格1
-     *@Date:2019/6/6_11:25
+     *@Description:获取延保价格
+     *@Date:2020/12/18_21:31
      */
     @RequestMapping(value = "/GetExtendInsurePrice", method = RequestMethod.POST)
-    public String GetExtendInsurePrice(HttpServletRequest request, HttpServletResponse response) {
+    public String GetExtendInsurePrice(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.GetExtendInsurePrice(request);
+        return cardService.GetExtendInsurePrice(jsonObject,token);
     }
 
     @RequestMapping(value = "/uploadPhoto", method = RequestMethod.POST)
-    public String uploadPhoto(HttpServletRequest request, HttpServletResponse response) {
+    public String uploadPhoto(@RequestBody JSONObject jsonObject, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.uploadPhoto(request);
+        return cardService.uploadPhoto(jsonObject,token);
     }
 
     @RequestMapping(value = "/saveOrderInfo", method = RequestMethod.POST)
-    public String saveOrderInfo(HttpServletRequest request, HttpServletResponse response) {
+    public String saveOrderInfo(HttpServletRequest request, HttpServletResponse response, @RequestHeader("token") String token) {
 
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST,GET,OPTIONS,DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-        return cardService.saveOrderInfo(request);
+        return cardService.saveOrderInfo(request,token);
     }
 
     @RequestMapping(value = "/updateOrderInfo", method = RequestMethod.POST)
